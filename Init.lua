@@ -18,11 +18,16 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 	end
 
 	local barHeight = isXeph and 12 or 8
-	local padding = isXeph and 2 or 1
+	local padding = isXeph and 2 or 0
 	local yOffset = isXeph and 4 or 2
 
 	local enableGlow = isXeph
 	local enableVariableColors = isXeph
+    local enableBackground = not isXeph
+
+    local fullR, fullG, fullB = 0.93, 0.21, 0.35
+    local almostFullR, almostFullG, almostFullB = 1, 0.5, 0.2
+    local defaultR, defaultG, defaultB = 0.2, 0.58, 0.5
 
 	local LibCustomGlow = LibStub("LibCustomGlow-1.0")
 
@@ -139,18 +144,30 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 		end
 
 		local r, g, b, a
-		if currentPower == maxPower or not enableVariableColors then
-			r, g, b, a = 0.93, 0.21, 0.35, 1
+        if not enableVariableColors then
+            r, g, b, a = defaultR, defaultG, defaultB, 1
+		elseif currentPower == maxPower then
+			r, g, b, a = fullR, fullG, fullB, 1
 		elseif currentPower >= maxPower - 1 then
-			r, g, b, a = 1, 0.5, 0, 1
+			r, g, b, a = almostFullR, almostFullG, almostFullB, 1
 		elseif currentPower < spenderCost then
-			r, g, b, a = 0.2, 0.58, 0.5, self.availableEssenceBursts > 0 and 1 or 0.5
+			r, g, b, a = defaultR, defaultG, defaultB, self.availableEssenceBursts > 0 and 1 or 0.5
 		else
-			r, g, b, a = 0.2, 0.58, 0.5, 1
+			r, g, b, a = defaultR, defaultG, defaultB, 1
 		end
 
 		for i = 1, 6 do
-			self:GetStatusBarAtIndex(i):SetStatusBarColor(r, g, b, a)
+            local statusBar = self:GetStatusBarAtIndex(i)
+			statusBar:SetStatusBarColor(r, g, b, a)
+
+            if enableBackground then
+                statusBar.Background:SetVertexColor(
+                    r * 0.4, 
+                    g * 0.4, 
+                    b * 0.4, 
+                    a
+                )
+            end
 		end
 	end
 
@@ -170,6 +187,18 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 				edgeSize = 1,
 			})
 			statusBar.Border:SetBackdropBorderColor(0.1, 0.1, 0.1, 1)
+
+            if enableBackground then
+                statusBar.Background = statusBar:CreateTexture("EssenceBar" .. i .. ".Background", "BACKGROUND")
+                statusBar.Background:SetAllPoints()
+                statusBar.Background:SetTexture("Interface\\Buttons\\WHITE8X8")
+                statusBar.Background:SetVertexColor(
+                    defaultR * 0.4,
+                    defaultG * 0.4,
+                    defaultB * 0.4,
+                    1
+                )
+            end
 
 			self[key] = statusBar
 
