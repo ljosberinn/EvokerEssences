@@ -114,9 +114,9 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 				0.2, -- frequency
 				nil, -- length
 				nil, -- thickness
-				2, -- xOffset
-				2, -- yOffset
-				nil, -- border
+				1, -- xOffset
+				1, -- yOffset
+				false, -- border
 				nil, -- key
 				nil -- frameLevel
 			)
@@ -182,7 +182,7 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 	function frame:Relayout()
 		local maxPower = self:GetMaxPower()
 		local widthToDistribute = math.max(EssentialCooldownViewer:GetWidth(), 300)
-		local individualBarWidth = (widthToDistribute - padding * (maxPower - 1)) / maxPower
+		local individualBarWidth = math.floor((widthToDistribute - padding * (maxPower - 1)) / maxPower + 0.5)
 
 		if individualBarWidth < 0 then
 			return
