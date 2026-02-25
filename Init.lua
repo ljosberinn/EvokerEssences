@@ -305,17 +305,17 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 				self.specId = PlayerUtil.GetCurrentSpecID()
 
 				if enableVariableColors and self.specId ~= presSpecId then
-					frame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
+					self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
 				else
-					frame:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+					self:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 				end
 
 				if (enableVariableColors and self.specId ~= presSpecId) or enableGlow then
-					frame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
-					frame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
+					self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
+					self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
 				else
-					frame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
-					frame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
+					self:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
+					self:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
 
 					self.availableEssenceBursts = 0
 				end
@@ -346,7 +346,6 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 						end
 
 						self.imminentDestructionStacks = self.imminentDestructionStacks - 1
-					else
 					end
 				end
 			elseif event == "SPELL_ACTIVATION_OVERLAY_SHOW" then
