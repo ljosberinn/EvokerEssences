@@ -201,7 +201,14 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 				PixelUtil.SetPoint(statusBar, "LEFT", previousStatusBar, "RIGHT", padding, 0)
 			end
 
-			statusBar:SetSize(individualBarWidth, barHeight)
+            if i == maxPower then
+                -- Big Chungus
+                local remainder = math.floor(widthToDistribute % individualBarWidth)
+                statusBar:SetSize(individualBarWidth + remainder, barHeight)
+            else
+                statusBar:SetSize(individualBarWidth, barHeight)
+            end
+			
 
 			statusBar:SetShown(i <= maxPower)
 			statusBar:SetMinMaxValues(0, 1)
