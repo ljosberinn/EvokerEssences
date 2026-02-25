@@ -1,0 +1,11 @@
+## Interface: 120001
+## Title: Essences
+## Author: Xephyris
+## Version: 1.0.0
+## DefaultState: Enabled
+## IconTexture: Interface\Icons\ability_evoker_essenceburst
+## Category: Evoker
+
+Libs\LibStub\LibStub.lua
+Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.lua
+Init.lua
