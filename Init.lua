@@ -2,6 +2,9 @@
 local addonName = ...
 
 ---@class EssencesParentFrame : Frame
+---@field _PixelGlow Frame?
+---@field Background Texture?
+---@field Border Frame?
 
 EventUtil.ContinueOnAddOnLoaded(addonName, function()
 	-- only Evokers, see classID here: https://wago.tools/db2/ChrSpecialization
