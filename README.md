@@ -13,4 +13,4 @@ Features:
   - evoker class color when you can cast a spender
   - orange when you're recharging your final essence
   - red when you're capped on essences
-- currently has two styles; @Krealle (default) and @ljosberin, which is only active if your character name matches mine. to override it, edit `Init.lua` and add `isXeph = true` below the name check
+- currently has two styles; @Krealle (default) and @ljosberinn, which is only active if your character name matches mine. to override it, edit `Init.lua` and add `isXeph = true` below the name check
