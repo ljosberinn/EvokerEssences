@@ -26,7 +26,7 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 
 	local enableGlow = isXeph
 	local enableVariableColors = isXeph
-	local enableBackground = isXeph
+	local enableBackground = true
 
 	local fullR, fullG, fullB = 0.93, 0.21, 0.35
 	local almostFullR, almostFullG, almostFullB = 1, 0.5, 0.2
