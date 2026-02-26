@@ -19,15 +19,15 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 
 	local barHeight = isXeph and 12 or 8
 	local padding = isXeph and 2 or 0
-	local yOffset = isXeph and 4 or 2
+	local yOffset = isXeph and 3 or 2
 
 	local enableGlow = isXeph
 	local enableVariableColors = isXeph
-    local enableBackground = not isXeph
+	local enableBackground = isXeph
 
-    local fullR, fullG, fullB = 0.93, 0.21, 0.35
-    local almostFullR, almostFullG, almostFullB = 1, 0.5, 0.2
-    local defaultR, defaultG, defaultB = 0.2, 0.58, 0.5
+	local fullR, fullG, fullB = 0.93, 0.21, 0.35
+	local almostFullR, almostFullG, almostFullB = 1, 0.5, 0.2
+	local defaultR, defaultG, defaultB = 0.2, 0.58, 0.5
 
 	local LibCustomGlow = LibStub("LibCustomGlow-1.0")
 
@@ -111,25 +111,25 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 			return
 		end
 
-		if self._PixelGlow == nil then
-			LibCustomGlow.PixelGlow_Start(
-				self,
-				nil,
-				nil, -- N
-				0.2, -- frequency
-				nil, -- length
-				nil, -- thickness
-				1, -- xOffset
-				1, -- yOffset
-				false, -- border
-				nil, -- key
-				nil -- frameLevel
-			)
-		end
-
 		if show then
+			if self._PixelGlow == nil then
+				LibCustomGlow.PixelGlow_Start(
+					self,
+					nil,
+					nil, -- N
+					0.2, -- frequency
+					nil, -- length
+					nil, -- thickness
+					1, -- xOffset
+					1, -- yOffset
+					false, -- border
+					nil, -- key
+					nil -- frameLevel
+				)
+			end
+
 			self._PixelGlow:Show()
-		else
+		elseif self._PixelGlow ~= nil then
 			self._PixelGlow:Hide()
 		end
 	end
@@ -144,8 +144,8 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 		end
 
 		local r, g, b, a
-        if not enableVariableColors then
-            r, g, b, a = defaultR, defaultG, defaultB, 1
+		if not enableVariableColors then
+			r, g, b, a = defaultR, defaultG, defaultB, 1
 		elseif currentPower == maxPower then
 			r, g, b, a = fullR, fullG, fullB, 1
 		elseif currentPower >= maxPower - 1 then
@@ -157,17 +157,12 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 		end
 
 		for i = 1, 6 do
-            local statusBar = self:GetStatusBarAtIndex(i)
+			local statusBar = self:GetStatusBarAtIndex(i)
 			statusBar:SetStatusBarColor(r, g, b, a)
 
-            if enableBackground then
-                statusBar.Background:SetVertexColor(
-                    r * 0.4, 
-                    g * 0.4, 
-                    b * 0.4, 
-                    a
-                )
-            end
+			if enableBackground then
+				statusBar.Background:SetVertexColor(r * 0.4, g * 0.4, b * 0.4, a)
+			end
 		end
 	end
 
@@ -180,7 +175,7 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 			local statusBar = CreateFrame("StatusBar", "EssenceBar" .. i, self)
 			statusBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8")
 			statusBar:SetStatusBarColor(0.2, 0.58, 0.5)
-			statusBar.Border = CreateFrame("Frame", "BACKGROUND", statusBar, "BackdropTemplate")
+			statusBar.Border = CreateFrame("Frame", "Border", statusBar, "BackdropTemplate")
 			statusBar.Border:SetAllPoints()
 			statusBar.Border:SetBackdrop({
 				edgeFile = "Interface\\Buttons\\WHITE8x8",
@@ -188,17 +183,12 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 			})
 			statusBar.Border:SetBackdropBorderColor(0.1, 0.1, 0.1, 1)
 
-            if enableBackground then
-                statusBar.Background = statusBar:CreateTexture("EssenceBar" .. i .. ".Background", "BACKGROUND")
-                statusBar.Background:SetAllPoints()
-                statusBar.Background:SetTexture("Interface\\Buttons\\WHITE8X8")
-                statusBar.Background:SetVertexColor(
-                    defaultR * 0.4,
-                    defaultG * 0.4,
-                    defaultB * 0.4,
-                    1
-                )
-            end
+			if enableBackground then
+				statusBar.Background = statusBar:CreateTexture("Background", "BACKGROUND")
+				statusBar.Background:SetAllPoints()
+				statusBar.Background:SetTexture("Interface\\Buttons\\WHITE8X8")
+				statusBar.Background:SetVertexColor(defaultR * 0.4, defaultG * 0.4, defaultB * 0.4, 1)
+			end
 
 			self[key] = statusBar
 
@@ -209,69 +199,50 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 	end
 
 	function frame:Relayout()
-		local maxPower = self:GetMaxPower()
-		local widthToDistribute = math.max(EssentialCooldownViewer:GetWidth(), 300)
-		local individualBarWidth = math.floor((widthToDistribute - padding * (maxPower - 1)) / maxPower + 0.5)
+		local cdvWidth = EssentialCooldownViewer:GetWidth()
 
-		if individualBarWidth < 0 then
+		if cdvWidth <= 2 then
 			return
 		end
 
+		local widthToDistribute = math.floor(math.max(cdvWidth + 0.5, 300))
+		local maxPower = self:GetMaxPower()
+		local totalBarSpace = widthToDistribute - (maxPower - 1) * padding
+		local individualBarWidth = math.floor(totalBarSpace / maxPower)
+		local extraPixels = totalBarSpace % maxPower
 		local currentPower = self:GetCurrentPower()
 
 		for i = 1, 6 do
 			local statusBar = self:GetStatusBarAtIndex(i)
-			statusBar:ClearAllPoints()
 
-			if i == 1 then
-				PixelUtil.SetPoint(statusBar, "LEFT", self, "LEFT", 0, 0)
+			if i > maxPower then
+				statusBar:Hide()
 			else
-				local previousStatusBar = self:GetStatusBarAtIndex(i - 1)
-				PixelUtil.SetPoint(statusBar, "LEFT", previousStatusBar, "RIGHT", padding, 0)
-			end
+				statusBar:ClearAllPoints()
 
-            if i == maxPower then
-                -- Big Chungus
-                local remainder = math.floor(widthToDistribute % individualBarWidth)
-                statusBar:SetSize(individualBarWidth + remainder, barHeight)
-            else
-                statusBar:SetSize(individualBarWidth, barHeight)
-            end
-			
+				if i == 1 then
+					PixelUtil.SetPoint(statusBar, "LEFT", self, "LEFT", 0, 0)
+				else
+					local previousStatusBar = self:GetStatusBarAtIndex(i - 1)
+					PixelUtil.SetPoint(statusBar, "LEFT", previousStatusBar, "RIGHT", padding, 0)
+				end
 
-			statusBar:SetShown(i <= maxPower)
-			statusBar:SetMinMaxValues(0, 1)
-
-			if i <= currentPower then
-				statusBar:SetValue(1)
-			else
-				statusBar:SetValue(0)
+				local width = individualBarWidth + (i <= extraPixels and 1 or 0)
+				statusBar:SetSize(width, barHeight)
+				statusBar:SetMinMaxValues(0, 1)
+				statusBar:SetValue(i <= currentPower and 1 or 0)
+				statusBar:Show()
 			end
 		end
 
 		self:UpdateBarColors(currentPower)
 	end
 
-	PixelUtil.SetSize(frame, EssentialCooldownViewer:GetWidth(), barHeight - 2)
-
-	EssentialCooldownViewer:HookScript("OnSizeChanged", function()
-		local nextWidth = EssentialCooldownViewer:GetWidth()
-
-		if nextWidth == frame:GetWidth() then
-			return
-		end
-
-		PixelUtil.SetSize(frame, nextWidth, barHeight - 2)
-
-		frame:Relayout()
-	end)
-
-	frame:Relayout()
-
 	frame:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player")
 	frame:RegisterUnitEvent("UNIT_MAXPOWER", "player")
 	frame:RegisterUnitEvent("SPELLS_CHANGED")
 	frame:RegisterUnitEvent("PLAYER_DEAD")
+	frame:RegisterUnitEvent("FIRST_FRAME_RENDERED")
 
 	if enableVariableColors then
 		frame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
@@ -388,11 +359,9 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 				local spellId = ...
 
 				if self:IsEssenceBurst(spellId) then
-					local nextEssenceBurstCount = self:CountActiveEssenceBursts()
+					self.availableEssenceBursts = self:CountActiveEssenceBursts()
 
-					self.availableEssenceBursts = nextEssenceBurstCount
-
-					if nextEssenceBurstCount > 0 then
+					if self.availableEssenceBursts > 0 then
 						self:ToggleGlow(true)
 						self:UpdateBarColors(self:GetCurrentPower())
 					end
@@ -414,6 +383,22 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 						end
 					end)
 				end
+			elseif event == "FIRST_FRAME_RENDERED" then
+				PixelUtil.SetSize(frame, EssentialCooldownViewer:GetWidth(), barHeight - 2)
+
+				EssentialCooldownViewer:HookScript("OnSizeChanged", function()
+					local nextWidth = EssentialCooldownViewer:GetWidth()
+
+					if nextWidth == frame:GetWidth() then
+						return
+					end
+
+					PixelUtil.SetSize(frame, nextWidth, barHeight - 2)
+
+					frame:Relayout()
+				end)
+
+				self:Relayout()
 			elseif event == "UNIT_MAXPOWER" then
 				local unit, powerType = ...
 
