@@ -17,7 +17,7 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 	do
 		local name = UnitName("player")
 
-		isXeph = name == "Xephyris" or name == "Syriphex"
+		isXeph = name == "Xephyris" or name == "Syrihpex"
 	end
 
 	local barHeight = isXeph and 12 or 8
@@ -39,7 +39,6 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 	frame:ClearAllPoints()
 	PixelUtil.SetPoint(frame, "BOTTOM", EssentialCooldownViewer, "TOP", 0, yOffset)
 
-	frame.lastPower = 0
 	frame.imminentDestructionStacks = 0
 	frame.specId = 0
 	frame.availableEssenceBursts = 0
@@ -175,7 +174,7 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 		local key = "EssenceBar" .. i
 
 		if self[key] == nil then
-			local statusBar = CreateFrame("StatusBar", "EssenceBar" .. i, self)
+			local statusBar = CreateFrame("StatusBar", key, self)
 			statusBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8")
 			statusBar:SetStatusBarColor(0.2, 0.58, 0.5)
 			statusBar.Border = CreateFrame("Frame", "Border", statusBar, "BackdropTemplate")
@@ -244,7 +243,6 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 	frame:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player")
 	frame:RegisterUnitEvent("UNIT_MAXPOWER", "player")
 	frame:RegisterUnitEvent("SPELLS_CHANGED")
-	frame:RegisterUnitEvent("PLAYER_DEAD")
 	frame:RegisterUnitEvent("FIRST_FRAME_RENDERED")
 
 	if enableVariableColors then
@@ -310,7 +308,6 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 				end
 
 				self:UpdateBarColors(currentPower)
-				self.lastPower = currentPower
 			elseif event == "SPELLS_CHANGED" then
 				self.specId = PlayerUtil.GetCurrentSpecID()
 
@@ -361,29 +358,40 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 			elseif event == "SPELL_ACTIVATION_OVERLAY_SHOW" then
 				local spellId = ...
 
-				if self:IsEssenceBurst(spellId) then
-					self.availableEssenceBursts = self:CountActiveEssenceBursts()
+				if not self:IsEssenceBurst(spellId) then
+					return
+				end
 
-					if self.availableEssenceBursts > 0 then
-						self:ToggleGlow(true)
-						self:UpdateBarColors(self:GetCurrentPower())
-					end
+				local nextEssenceBurstCount = self:CountActiveEssenceBursts()
+
+				if nextEssenceBurstCount > 0 and self.availableEssenceBursts ~= nextEssenceBurstCount then
+					self.availableEssenceBursts = nextEssenceBurstCount
+					self:ToggleGlow(true)
+					self:UpdateBarColors(self:GetCurrentPower())
 				end
 			elseif event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
 				local spellId = ...
 
+				-- this should only fire when resetting all spell overlay glows but fires at random times regardless
 				if spellId == nil then
-					self.availableEssenceBursts = 0
-					self:ToggleGlow(false)
+					local nextEssenceBurstCount = self:CountActiveEssenceBursts()
+
+					if self.availableEssenceBursts ~= nextEssenceBurstCount then
+						self.availableEssenceBursts = nextEssenceBurstCount
+						self:ToggleGlow(nextEssenceBurstCount > 0)
+					end
 				elseif self:IsEssenceBurst(spellId) then
 					-- delay briefly as by the time this executes, the overlay is still animating out.
 					-- 0.2s is fast enough that you won't notice the delay
 					C_Timer.After(0.2, function()
-						self.availableEssenceBursts = self:CountActiveEssenceBursts()
+						local nextEssenceBurstCount = self:CountActiveEssenceBursts()
 
-						if self.availableEssenceBursts == 0 then
-							self:ToggleGlow(false)
+						if self.availableEssenceBursts == nextEssenceBurstCount then
+							return
 						end
+
+						self.availableEssenceBursts = nextEssenceBurstCount
+						self:ToggleGlow(nextEssenceBurstCount > 0)
 					end)
 				end
 			elseif event == "FIRST_FRAME_RENDERED" then
