@@ -379,6 +379,7 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 					if self.availableEssenceBursts ~= nextEssenceBurstCount then
 						self.availableEssenceBursts = nextEssenceBurstCount
 						self:ToggleGlow(nextEssenceBurstCount > 0)
+						self:UpdateBarColors(self:GetCurrentPower())
 					end
 				elseif self:IsEssenceBurst(spellId) then
 					-- delay briefly as by the time this executes, the overlay is still animating out.
@@ -392,6 +393,7 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 
 						self.availableEssenceBursts = nextEssenceBurstCount
 						self:ToggleGlow(nextEssenceBurstCount > 0)
+						self:UpdateBarColors(self:GetCurrentPower())
 					end)
 				end
 			elseif event == "FIRST_FRAME_RENDERED" then
