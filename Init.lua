@@ -83,13 +83,13 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 
 	---@return number
 	function frame:GetRechargeRate()
-		local rate = GetPowerRegenForPowerType(Enum.PowerType.Essence)
+		local basePowerRegen = GetPowerRegenForPowerType(Enum.PowerType.Essence)
 
-		if not rate or rate == 0 then
-			rate = 0.2
+		if not basePowerRegen or basePowerRegen == 0 then
+			basePowerRegen = 0.2
 		end
 
-		return rate
+		return basePowerRegen
 	end
 
 	---@param id number
@@ -142,7 +142,13 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 		local spenderCost = self.specId == devaSpecId and 3 or 2
 
 		if self.imminentDestructionStacks > 0 then
-			spenderCost = spenderCost - 1
+			local imminentDestructionDiff = GetTime() - self.lastImminentDestructionStart
+
+			if imminentDestructionDiff > 30 then
+				self.imminentDestructionStacks = 0
+			else
+				spenderCost = spenderCost - 1
+			end
 		end
 
 		local r, g, b, a
