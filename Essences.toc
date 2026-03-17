@@ -5,7 +5,16 @@
 ## DefaultState: Enabled
 ## IconTexture: Interface\Icons\ability_evoker_essenceburst
 ## Category: Evoker
+## SavedVariables: EssencesSaved
 
 Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
 Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.lua
+Libs\LibEditMode\embed.xml
+Libs\LibSharedMedia-3.0\lib.xml
+
+Enum.lua
+Localization\enUS.lua
+Settings.lua
 Init.lua
+Driver.lua
