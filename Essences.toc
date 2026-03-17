@@ -7,7 +7,7 @@
 ## Category: Evoker
 ## SavedVariables: EssencesSaved
 
-## X-Curse-Project-ID: 1418323
+## X-Curse-Project-ID: 1488278
 ## X-Wago-ID: aN0X1PNj
 
 Libs\LibStub\LibStub.lua
