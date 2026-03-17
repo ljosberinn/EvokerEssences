@@ -270,7 +270,7 @@ table.insert(Private.LoginFnQueue, function()
 		end
 	end
 
-	Private.EventRegistry:RegisterCallback(Private.Enum.Events.SETTING_CHANGED, function(key, value)
+	Private.EventRegistry:RegisterCallback(Private.Enum.Events.SETTING_CHANGED, function(self, key, value)
 		if key == Private.Settings.Keys.ShowGlow or key == Private.Settings.Keys.UseColors then
 			SyncEventRegistration()
 			frame:UpdateBarColors(frame:GetCurrentPower())
