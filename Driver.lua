@@ -896,6 +896,11 @@ table.insert(Private.LoginFnQueue, function()
 			addonName
 		)
 
+		local sel = LibEditMode.frameSelections[frame]
+		-- sel:SetScript("OnMouseDown", nil)
+		sel:SetScript("OnDragStart", nil)
+		sel:SetScript("OnDragStop", nil)
+
 		local displayOrder = Private.Settings.GetDisplayOrder()
 		local defaults = Private.Settings.GetDefaultSettings()
 		local settings = {}
