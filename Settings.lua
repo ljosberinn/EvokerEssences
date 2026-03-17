@@ -26,7 +26,7 @@ Private.Settings.Keys = {
 ---@param preset number
 ---@return EssencesSavedSettings
 function Private.Settings.GetPresetValues(preset)
-	local isXeph = preset == Private.Enum.Preset.Xeph
+	local isXeph = preset == Private.Enum.Preset.Xephyris
 
 	return {
 		ShowGlow = isXeph,
@@ -49,7 +49,7 @@ end
 
 ---@return EssencesSavedSettings
 function Private.Settings.GetDefaultSettings()
-	return Private.Settings.GetPresetValues(Private.Enum.Preset.Xeph)
+	return Private.Settings.GetPresetValues(Private.Enum.Preset.Xephyris)
 end
 
 ---@param key string

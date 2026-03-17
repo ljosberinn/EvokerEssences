@@ -485,7 +485,7 @@ table.insert(Private.LoginFnQueue, function()
 				return {
 					name = Private.L.Settings.PresetLabel,
 					kind = Enum.EditModeSettingDisplayType.Dropdown,
-					default = Private.Enum.Preset.Xeph,
+					default = Private.Enum.Preset.Xephyris,
 					desc = Private.L.Settings.PresetTooltip,
 					generator = Generator,
 					set = function() end,
