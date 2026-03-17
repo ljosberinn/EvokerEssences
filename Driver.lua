@@ -264,7 +264,7 @@ table.insert(Private.LoginFnQueue, function()
 		return active
 	end
 
-	local function SyncEventRegistration()
+	local function RegisterEvents()
 		if (EssencesSaved.Settings.UseColors and frame.specId ~= presSpecId) or EssencesSaved.Settings.ShowGlow then
 			frame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
 			frame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
@@ -283,7 +283,7 @@ table.insert(Private.LoginFnQueue, function()
 
 	Private.EventRegistry:RegisterCallback(Private.Enum.Events.SETTING_CHANGED, function(self, key, value)
 		if key == Private.Settings.Keys.ShowGlow or key == Private.Settings.Keys.UseColors then
-			SyncEventRegistration()
+			RegisterEvents()
 			frame:UpdateBarColors(frame:GetCurrentPower())
 		elseif key == Private.Settings.Keys.BaseColor then
 			frame.colorBase = HexStringToTable(value)
@@ -363,7 +363,7 @@ table.insert(Private.LoginFnQueue, function()
 			self:UpdateBarColors(currentPower)
 		elseif event == "SPELLS_CHANGED" then
 			self.specId = PlayerUtil.GetCurrentSpecID()
-			SyncEventRegistration()
+			RegisterEvents()
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			local spellId = select(3, ...)
 
@@ -912,5 +912,10 @@ table.insert(Private.LoginFnQueue, function()
 		LibEditMode:AddFrameSettings(frame, settings)
 	end
 
-	SyncEventRegistration()
+	RegisterEvents()
+
+	-- BetterCooldownManager randomly hides the frame on login/reload
+	frame:SetScript("OnHide", function(self)
+		self:Show()
+	end)
 end)
