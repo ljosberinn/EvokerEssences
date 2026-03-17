@@ -14,7 +14,9 @@ Libs\LibEditMode\embed.xml
 Libs\LibSharedMedia-3.0\lib.xml
 
 Enum.lua
-Localization\enUS.lua
-Settings.lua
 Init.lua
+
+Localization\enUS.lua
+
+Settings.lua
 Driver.lua
