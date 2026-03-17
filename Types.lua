@@ -62,7 +62,6 @@
 ---@field BackgroundBrightness number
 ---@field MinWidth number
 ---@field BarTexture string
----@field BorderTexture string
 ---@field BackgroundTexture string
 
 ---@class EssencesSettings

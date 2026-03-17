@@ -18,7 +18,6 @@ Private.Settings.Keys = {
 	BackgroundBrightness = "BACKGROUND_BRIGHTNESS",
 	MinWidth = "MIN_WIDTH",
 	BarTexture = "BAR_TEXTURE",
-	BorderTexture = "BORDER_TEXTURE",
 	BackgroundTexture = "BACKGROUND_TEXTURE",
 	Preset = "PRESET", -- write-only trigger, not persisted as its own key
 }
@@ -42,7 +41,6 @@ function Private.Settings.GetPresetValues(preset)
 		BackgroundBrightness = 0.4,
 		MinWidth = 200,
 		BarTexture = "Interface\\Buttons\\WHITE8X8",
-		BorderTexture = "Interface\\Buttons\\WHITE8x8",
 		BackgroundTexture = "Interface\\Buttons\\WHITE8X8",
 	}
 end
@@ -114,7 +112,6 @@ function Private.Settings.GetDisplayOrder()
 		Private.Settings.Keys.Gap,
 		Private.Settings.Keys.MinWidth,
 		Private.Settings.Keys.BarTexture,
-		Private.Settings.Keys.BorderTexture,
 		Private.Settings.Keys.BackgroundTexture,
 	}
 end

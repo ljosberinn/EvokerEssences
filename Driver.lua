@@ -172,7 +172,7 @@ table.insert(Private.LoginFnQueue, function()
 			statusBar.Border = CreateFrame("Frame", "Border", statusBar, "BackdropTemplate")
 			statusBar.Border:SetAllPoints()
 			statusBar.Border:SetBackdrop({
-				edgeFile = EssencesSaved.Settings.BorderTexture,
+				edgeFile = "Interface\\Buttons\\WHITE8x8",
 				edgeSize = 1,
 			})
 			statusBar.Border:SetBackdropBorderColor(0.1, 0.1, 0.1, 1)
@@ -307,13 +307,6 @@ table.insert(Private.LoginFnQueue, function()
 		elseif key == Private.Settings.Keys.BarTexture then
 			for i = 1, 6 do
 				frame:GetStatusBarAtIndex(i):SetStatusBarTexture(value)
-			end
-		elseif key == Private.Settings.Keys.BorderTexture then
-			for i = 1, 6 do
-				frame:GetStatusBarAtIndex(i).Border:SetBackdrop({
-					edgeFile = value,
-					edgeSize = 1,
-				})
 			end
 		elseif key == Private.Settings.Keys.BackgroundTexture then
 			for i = 1, 6 do
@@ -848,46 +841,6 @@ table.insert(Private.LoginFnQueue, function()
 					kind = Enum.EditModeSettingDisplayType.Dropdown,
 					default = defaults.BarTexture,
 					desc = Private.L.Settings.BarTextureTooltip,
-					generator = Generator,
-					set = Set,
-				}
-			end
-
-			if key == Private.Settings.Keys.BorderTexture then
-				local function Generator(_, rootDescription)
-					for name, path in pairs(LibSharedMedia:HashTable(LibSharedMedia.MediaType.BORDER)) do
-						local function IsEnabled()
-							return EssencesSaved.Settings.BorderTexture == path
-						end
-
-						local function SetProxy()
-							if EssencesSaved.Settings.BorderTexture ~= path then
-								EssencesSaved.Settings.BorderTexture = path
-								Private.EventRegistry:TriggerEvent(
-									Private.Enum.Events.SETTING_CHANGED,
-									Private.Settings.Keys.BorderTexture,
-									path
-								)
-							end
-						end
-
-						rootDescription:CreateRadio(name, IsEnabled, SetProxy)
-					end
-				end
-
-				local function Set(_, value)
-					if EssencesSaved.Settings.BorderTexture ~= value then
-						EssencesSaved.Settings.BorderTexture = value
-						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
-					end
-				end
-
-				---@type LibEditModeDropdown
-				return {
-					name = Private.L.Settings.BorderTextureLabel,
-					kind = Enum.EditModeSettingDisplayType.Dropdown,
-					default = defaults.BorderTexture,
-					desc = Private.L.Settings.BorderTextureTooltip,
 					generator = Generator,
 					set = Set,
 				}

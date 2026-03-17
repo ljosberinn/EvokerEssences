@@ -41,7 +41,5 @@ L.Settings.PresetLabels = {
 }
 L.Settings.BarTextureLabel = "Bar Texture"
 L.Settings.BarTextureTooltip = nil
-L.Settings.BorderTextureLabel = "Border Texture"
-L.Settings.BorderTextureTooltip = nil
 L.Settings.BackgroundTextureLabel = "Background Texture"
 L.Settings.BackgroundTextureTooltip = nil
