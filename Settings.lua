@@ -65,8 +65,8 @@ function Private.Settings.GetSliderSettingsForKey(key)
 
 	if key == Private.Settings.Keys.BarHeight then
 		return {
-			min = 1,
-			max = 40,
+			min = 4,
+			max = 200,
 			step = 1,
 		}
 	end

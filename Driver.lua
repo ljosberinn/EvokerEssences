@@ -203,6 +203,17 @@ table.insert(Private.LoginFnQueue, function()
 			return
 		end
 
+		PixelUtil.SetSize(frame, cdvWidth, EssencesSaved.Settings.BarHeight - 2)
+		frame:ClearAllPoints()
+		PixelUtil.SetPoint(
+			frame,
+			"BOTTOM",
+			EssentialCooldownViewer,
+			"TOP",
+			EssencesSaved.Settings.OffsetX,
+			EssencesSaved.Settings.OffsetY
+		)
+
 		local widthToDistribute = math.floor(math.max(cdvWidth + 0.5, EssencesSaved.Settings.MinWidth))
 		local maxPower = self:GetMaxPower()
 		local totalBarSpace = widthToDistribute - (maxPower - 1) * EssencesSaved.Settings.Gap
@@ -431,8 +442,6 @@ table.insert(Private.LoginFnQueue, function()
 				end)
 			end
 		elseif event == "FIRST_FRAME_RENDERED" then
-			PixelUtil.SetSize(frame, EssentialCooldownViewer:GetWidth(), EssencesSaved.Settings.BarHeight - 2)
-
 			EssentialCooldownViewer:HookScript("OnSizeChanged", function()
 				local nextWidth = EssentialCooldownViewer:GetWidth()
 
