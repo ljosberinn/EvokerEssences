@@ -12,5 +12,5 @@ Private.Enum.Events = {
 ---@enum Preset
 Private.Enum.Preset = {
 	Xephyris = 1,
-	Vollmerino = 2,
+	Vollmer = 2,
 }

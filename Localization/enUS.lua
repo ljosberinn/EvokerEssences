@@ -37,7 +37,7 @@ L.Settings.PresetLabel = "Preset"
 L.Settings.PresetTooltip = nil
 L.Settings.PresetLabels = {
 	[Private.Enum.Preset.Xephyris] = "Xephyris",
-	[Private.Enum.Preset.Vollmerino] = "Vollmerino",
+	[Private.Enum.Preset.Vollmer] = "Vollmer",
 }
 L.Settings.BarTextureLabel = "Bar Texture"
 L.Settings.BarTextureTooltip = nil
