@@ -245,6 +245,7 @@ table.insert(Private.LoginFnQueue, function()
 		end
 
 		self:UpdateBarColors(currentPower)
+		self:Show()
 	end
 
 	function frame:CountActiveEssenceBursts()
@@ -331,7 +332,10 @@ table.insert(Private.LoginFnQueue, function()
 	---@param self StatusBar
 	---@param elapsed number
 	local function OnUpdate(self, elapsed)
-		self:SetValue(math.min(1, self:GetValue() + elapsed * frame:GetRechargeRate()))
+		local actual = frame:GetPartialPower()
+		local smoothed = math.min(1, self:GetValue() + elapsed * frame:GetRechargeRate())
+
+		self:SetValue(math.max(smoothed, actual))
 	end
 
 	function frame:OnEvent(event, ...)
@@ -913,9 +917,4 @@ table.insert(Private.LoginFnQueue, function()
 	end
 
 	RegisterEvents()
-
-	-- BetterCooldownManager randomly hides the frame on login/reload
-	frame:SetScript("OnHide", function(self)
-		self:Show()
-	end)
 end)
