@@ -69,16 +69,6 @@ table.insert(Private.LoginFnQueue, function()
 		return UnitPartialPower("player", Enum.PowerType.Essence) / 1000.0
 	end
 
-	function frame:GetRechargeRate()
-		local basePowerRegen = GetPowerRegenForPowerType(Enum.PowerType.Essence)
-
-		if not basePowerRegen or basePowerRegen == 0 then
-			basePowerRegen = 0.2
-		end
-
-		return basePowerRegen
-	end
-
 	function frame:IsDeepBreathLike(id)
 		return id == 357210 -- deep breath
 			or id == 433874 -- deep breath maneuverability
@@ -331,10 +321,7 @@ table.insert(Private.LoginFnQueue, function()
 	---@param self StatusBar
 	---@param elapsed number
 	local function OnUpdate(self, elapsed)
-		local actual = frame:GetPartialPower()
-		local smoothed = math.min(1, self:GetValue() + elapsed * frame:GetRechargeRate())
-
-		self:SetValue(math.max(smoothed, actual))
+		self:SetValue(frame:GetPartialPower())
 	end
 
 	function frame:OnEvent(event, ...)
