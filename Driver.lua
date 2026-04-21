@@ -4,6 +4,7 @@ local addonName, Private = ...
 table.insert(Private.LoginFnQueue, function()
 	local LibEditMode = LibStub("LibEditMode")
 	local LibSharedMedia = LibStub("LibSharedMedia-3.0")
+	local LibCustomGlow = LibStub("LibCustomGlow-1.0")
 
 	local devaSpecId = 1467
 	local presSpecId = 1468
@@ -96,27 +97,21 @@ table.insert(Private.LoginFnQueue, function()
 		end
 
 		if show then
-			if self._PixelGlow == nil then
-				local LibCustomGlow = LibStub("LibCustomGlow-1.0")
-
-				LibCustomGlow.PixelGlow_Start(
-					self,
-					nil,
-					nil, -- N
-					0.2, -- frequency
-					nil, -- length
-					nil, -- thickness
-					1, -- xOffset
-					1, -- yOffset
-					false, -- border
-					nil, -- key
-					nil -- frameLevel
-				)
-			end
-
-			self._PixelGlow:Show()
+			LibCustomGlow.PixelGlow_Start(
+				self,
+				nil, -- r
+				nil, -- N
+				0.2, -- frequency
+				nil, -- length
+				nil, -- thickness
+				1, -- xOffset
+				1, -- yOffset
+				false, -- border
+				nil, -- key
+				nil -- frameLevel
+			)
 		elseif self._PixelGlow ~= nil then
-			self._PixelGlow:Hide()
+			LibCustomGlow.PixelGlow_Stop(self)
 		end
 	end
 
@@ -203,7 +198,11 @@ table.insert(Private.LoginFnQueue, function()
 			return
 		end
 
-		PixelUtil.SetSize(frame, cdvWidth, EssencesSaved.Settings.BarHeight - 2)
+		PixelUtil.SetSize(
+			frame,
+			math.max(EssencesSaved.Settings.MinWidth, cdvWidth),
+			EssencesSaved.Settings.BarHeight - 2
+		)
 		frame:ClearAllPoints()
 		PixelUtil.SetPoint(
 			frame,
@@ -465,6 +464,10 @@ table.insert(Private.LoginFnQueue, function()
 	frame:RegisterEvent("SPELLS_CHANGED")
 	frame:RegisterEvent("FIRST_FRAME_RENDERED")
 	frame:SetScript("OnEvent", frame.OnEvent)
+
+	function frame:OnHide()
+		self:Relayout()
+	end
 
 	do
 		local function CreateSetting(key, defaults)
