@@ -319,18 +319,23 @@ table.insert(Private.LoginFnQueue, function()
 		end
 	end, frame)
 
+	function frame:GetRechargeRate()
+		local info = C_Spell.GetSpellInfo(361227)
+
+		if not info then
+			return 0.2
+		end
+
+		return 1 / (info.castTime / 2000)
+	end
+
 	---@param self StatusBar
 	---@param elapsed number
 	local function OnUpdate(self, elapsed)
-		self.elapsed = self.elapsed + elapsed
+		local actual = frame:GetPartialPower()
+		local smooth = math.min(1, self:GetValue() + elapsed * frame:GetRechargeRate())
 
-		if self.elapsed < 0.1 then
-			return
-		end
-
-		self.elapsed = self.elapsed - 0.1
-
-		self:SetValue(frame:GetPartialPower())
+		self:SetValue(math.max(smooth, actual))
 	end
 
 	function frame:OnEvent(event, ...)

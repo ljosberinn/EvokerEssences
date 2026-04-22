@@ -45,6 +45,7 @@
 ---@field Relayout fun(self: EssencesParentFrame)
 ---@field CountActiveEssenceBursts fun(self: EssencesParentFrame): number
 ---@field OnEvent fun(self: EssencesParentFrame, event: WowEvent, ...)
+---@field GetRechargeRate fun(self: EssencesParentFrame): number
 
 ---@class EssencesSaved
 ---@field Settings EssencesSavedSettings
