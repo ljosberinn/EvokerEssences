@@ -18,6 +18,7 @@
 ---@field a number
 
 ---@class EssencesStatusBar : StatusBar
+---@field elapsed number
 ---@field Border Frame|BackdropTemplate
 ---@field Background Texture
 

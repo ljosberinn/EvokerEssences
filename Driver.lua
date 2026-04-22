@@ -172,6 +172,7 @@ table.insert(Private.LoginFnQueue, function()
 				1
 			)
 			statusBar.Background:SetShown(EssencesSaved.Settings.ShowBackground)
+			statusBar.elapsed = 0
 
 			self[key] = statusBar
 
@@ -321,6 +322,14 @@ table.insert(Private.LoginFnQueue, function()
 	---@param self StatusBar
 	---@param elapsed number
 	local function OnUpdate(self, elapsed)
+		self.elapsed = self.elapsed + elapsed
+
+		if self.elapsed < 0.1 then
+			return
+		end
+
+		self.elapsed = self.elapsed - 0.1
+
 		self:SetValue(frame:GetPartialPower())
 	end
 
