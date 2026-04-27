@@ -23,6 +23,8 @@ L.Settings.ShowBackgroundLabel = "Show Background"
 L.Settings.ShowBackgroundTooltip = nil
 L.Settings.ShowRechargingLabel = "Show Recharging"
 L.Settings.ShowRechargingTooltip = "Darken the essence currently recharging."
+L.Settings.HideWhileSkyridingLabel = "Hide While Skyriding"
+L.Settings.HideWhileSkyridingTooltip = "Hide the essence bar only while Skyriding is available on your current mount."
 
 L.Settings.BaseColorLabel = "Base Color"
 L.Settings.BaseColorTooltip = nil

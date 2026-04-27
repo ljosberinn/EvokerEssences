@@ -27,6 +27,36 @@ table.insert(Private.LoginFnQueue, function()
 	frame.availableEssenceBursts = 0
 	frame.lastImminentDestructionStart = 0
 
+	function frame:ShouldHideForSkyriding()
+		if not EssencesSaved.Settings.HideWhileSkyriding then
+			return false
+		end
+
+		if C_PlayerInfo == nil or C_PlayerInfo.GetGlidingInfo == nil then
+			return false
+		end
+
+		local _, canGlide = C_PlayerInfo.GetGlidingInfo()
+
+		return canGlide == true
+	end
+
+	function frame:UpdateVisibility()
+		self:SetShown(not self:ShouldHideForSkyriding())
+	end
+
+	function frame:QueueVisibilityRefresh()
+		self:UpdateVisibility()
+
+		if self.visibilityRefreshTicker ~= nil then
+			self.visibilityRefreshTicker:Cancel()
+		end
+
+		self.visibilityRefreshTicker = C_Timer.NewTicker(0.02, function()
+			frame:UpdateVisibility()
+		end, 25)
+	end
+
 	---@param hex string
 	---@return { r: number, g: number, b: number, a: number|nil }
 	local function HexStringToTable(hex)
@@ -289,7 +319,7 @@ table.insert(Private.LoginFnQueue, function()
 		end
 
 		self:UpdateBarColors(currentPower)
-		self:Show()
+		self:UpdateVisibility()
 	end
 
 	function frame:CountActiveEssenceBursts()
@@ -319,7 +349,7 @@ table.insert(Private.LoginFnQueue, function()
 			frame.availableEssenceBursts = 0
 		end
 
-		if EssencesSaved.Settings.UseColors and frame.specId ~= presSpecId then
+		if (EssencesSaved.Settings.UseColors and frame.specId ~= presSpecId) or EssencesSaved.Settings.HideWhileSkyriding then
 			frame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
 		else
 			frame:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
@@ -355,6 +385,9 @@ table.insert(Private.LoginFnQueue, function()
 			or key == Private.Settings.Keys.RechargingDarkness
 		then
 			frame:UpdateBarColors(frame:GetCurrentPower())
+		elseif key == Private.Settings.Keys.HideWhileSkyriding then
+			RegisterEvents()
+			frame:QueueVisibilityRefresh()
 		elseif
 			key == Private.Settings.Keys.OffsetX
 			or key == Private.Settings.Keys.OffsetY
@@ -465,6 +498,10 @@ table.insert(Private.LoginFnQueue, function()
 					self.imminentDestructionStacks = self.imminentDestructionStacks - 1
 				end
 			end
+
+			if EssencesSaved.Settings.HideWhileSkyriding then
+				self:QueueVisibilityRefresh()
+			end
 		elseif event == "SPELL_ACTIVATION_OVERLAY_SHOW" then
 			local spellId = ...
 
@@ -525,6 +562,15 @@ table.insert(Private.LoginFnQueue, function()
 			if powerType == "ESSENCE" then
 				self:Relayout()
 			end
+		elseif
+			event == "PLAYER_MOUNT_DISPLAY_CHANGED"
+			or event == "PLAYER_ENTERING_WORLD"
+			or event == "ZONE_CHANGED"
+			or event == "ZONE_CHANGED_INDOORS"
+			or event == "ZONE_CHANGED_NEW_AREA"
+			or event == "SPELL_UPDATE_USABLE"
+		then
+			self:QueueVisibilityRefresh()
 		end
 	end
 
@@ -532,9 +578,19 @@ table.insert(Private.LoginFnQueue, function()
 	frame:RegisterUnitEvent("UNIT_MAXPOWER", "player")
 	frame:RegisterEvent("SPELLS_CHANGED")
 	frame:RegisterEvent("FIRST_FRAME_RENDERED")
+	frame:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
+	frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+	frame:RegisterEvent("ZONE_CHANGED")
+	frame:RegisterEvent("ZONE_CHANGED_INDOORS")
+	frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+	frame:RegisterEvent("SPELL_UPDATE_USABLE")
 	frame:SetScript("OnEvent", frame.OnEvent)
 
 	function frame:OnHide()
+		if self:ShouldHideForSkyriding() then
+			return
+		end
+
 		self:Relayout()
 	end
 
@@ -715,6 +771,29 @@ table.insert(Private.LoginFnQueue, function()
 					kind = Enum.EditModeSettingDisplayType.Checkbox,
 					default = defaults.ShowRecharging,
 					desc = Private.L.Settings.ShowRechargingTooltip,
+					get = Get,
+					set = Set,
+				}
+			end
+
+			if key == Private.Settings.Keys.HideWhileSkyriding then
+				local function Get(_)
+					return EssencesSaved.Settings.HideWhileSkyriding
+				end
+
+				local function Set(_, value)
+					if EssencesSaved.Settings.HideWhileSkyriding ~= value then
+						EssencesSaved.Settings.HideWhileSkyriding = value
+						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
+					end
+				end
+
+				---@type LibEditModeCheckbox
+				return {
+					name = Private.L.Settings.HideWhileSkyridingLabel,
+					kind = Enum.EditModeSettingDisplayType.Checkbox,
+					default = defaults.HideWhileSkyriding,
+					desc = Private.L.Settings.HideWhileSkyridingTooltip,
 					get = Get,
 					set = Set,
 				}

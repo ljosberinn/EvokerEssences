@@ -43,6 +43,10 @@
 ---@field KnowsImminentDestruction fun(self: EssencesParentFrame): boolean
 ---@field ToggleGlow fun(self: EssencesParentFrame, show: boolean)
 ---@field UpdateBarColors fun(self: EssencesParentFrame, currentPower: number)
+---@field ShouldHideForSkyriding fun(self: EssencesParentFrame): boolean
+---@field UpdateVisibility fun(self: EssencesParentFrame)
+---@field QueueVisibilityRefresh fun(self: EssencesParentFrame)
+---@field visibilityRefreshTicker FunctionContainer?
 ---@field GetStatusBarAtIndex fun(self: EssencesParentFrame, i: number): EssencesStatusBar
 ---@field Relayout fun(self: EssencesParentFrame)
 ---@field CountActiveEssenceBursts fun(self: EssencesParentFrame): number
@@ -59,6 +63,7 @@
 ---@field UseColors boolean
 ---@field ShowCantCastOpacity boolean
 ---@field ShowRecharging boolean
+---@field HideWhileSkyriding boolean
 ---@field BaseColor string
 ---@field CapColor string
 ---@field NearlyCapColor string
