@@ -14,3 +14,9 @@ Private.Enum.Preset = {
 	Xephyris = 1,
 	Vollmer = 2,
 }
+
+---@enum EssenceBurstIndicator
+Private.Enum.EssenceBurstIndicator = {
+	Glow = 1,
+	Border = 2,
+}

@@ -10,6 +10,7 @@
 ---@class EssencesEnums
 ---@field Events table<string, string>
 ---@field Preset table<string, number>
+---@field EssenceBurstIndicator table<string, number>
 
 ---@class EssencesColor
 ---@field r number
@@ -31,6 +32,7 @@
 ---@field colorBase EssencesColor
 ---@field colorCap EssencesColor
 ---@field colorNearlyCap EssencesColor
+---@field colorEssenceBurstBorder EssencesColor
 ---@field IsSpender fun(self: EssencesParentFrame, spellId: number): boolean
 ---@field IsEssenceBurst fun(self: EssencesParentFrame, spellId: number): boolean
 ---@field GetCurrentPower fun(self: EssencesParentFrame): number
@@ -41,6 +43,10 @@
 ---@field KnowsImminentDestruction fun(self: EssencesParentFrame): boolean
 ---@field ToggleGlow fun(self: EssencesParentFrame, show: boolean)
 ---@field UpdateBarColors fun(self: EssencesParentFrame, currentPower: number)
+---@field ShouldHideForSkyriding fun(self: EssencesParentFrame): boolean
+---@field UpdateVisibility fun(self: EssencesParentFrame)
+---@field QueueVisibilityRefresh fun(self: EssencesParentFrame)
+---@field visibilityRefreshTicker FunctionContainer?
 ---@field GetStatusBarAtIndex fun(self: EssencesParentFrame, i: number): EssencesStatusBar
 ---@field Relayout fun(self: EssencesParentFrame)
 ---@field CountActiveEssenceBursts fun(self: EssencesParentFrame): number
@@ -52,10 +58,16 @@
 
 ---@class EssencesSavedSettings
 ---@field ShowGlow boolean
+---@field EssenceBurstIndicator number
+---@field EssenceBurstBorderColor string
 ---@field UseColors boolean
+---@field ShowCantCastOpacity boolean
+---@field ShowRecharging boolean
+---@field HideWhileSkyriding boolean
 ---@field BaseColor string
 ---@field CapColor string
 ---@field NearlyCapColor string
+---@field RechargingDarkness number
 ---@field ShowBackground boolean
 ---@field OffsetX number
 ---@field OffsetY number
