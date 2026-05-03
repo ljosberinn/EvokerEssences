@@ -8,6 +8,7 @@ table.insert(Private.LoginFnQueue, function()
 
 	local devaSpecId = 1467
 	local presSpecId = 1468
+	local normalBorderR, normalBorderG, normalBorderB, normalBorderA = 0.1, 0.1, 0.1, 1
 
 	---@type EssencesParentFrame
 	local frame = CreateFrame("Frame", "EssencesParentFrame", EssentialCooldownViewer)
@@ -42,12 +43,13 @@ table.insert(Private.LoginFnQueue, function()
 	frame.colorBase = HexStringToTable(EssencesSaved.Settings.BaseColor)
 	frame.colorCap = HexStringToTable(EssencesSaved.Settings.CapColor)
 	frame.colorNearlyCap = HexStringToTable(EssencesSaved.Settings.NearlyCapColor)
+	frame.colorEssenceBurstBorder = HexStringToTable(EssencesSaved.Settings.EssenceBurstBorderColor)
 
 	function frame:IsSpender(spellId)
 		return spellId == 356995 -- disintegrate
 			or spellId == 357211 -- pyre
 			or spellId == 364343 -- echo
-			or spellId == 395160 -- eruption
+			or spellId == 395160 -- eruptionf
 	end
 
 	function frame:IsEssenceBurst(spellId)
@@ -83,6 +85,37 @@ table.insert(Private.LoginFnQueue, function()
 
 	function frame:ToggleGlow(show)
 		if not EssencesSaved.Settings.ShowGlow then
+			if self._PixelGlow ~= nil then
+				LibCustomGlow.PixelGlow_Stop(self)
+			end
+
+			for i = 1, 6 do
+				self:GetStatusBarAtIndex(i).Border
+					:SetBackdropBorderColor(normalBorderR, normalBorderG, normalBorderB, normalBorderA)
+			end
+
+			return
+		end
+
+		if EssencesSaved.Settings.EssenceBurstIndicator == Private.Enum.EssenceBurstIndicator.Border then
+			if self._PixelGlow ~= nil then
+				LibCustomGlow.PixelGlow_Stop(self)
+			end
+
+			local r, g, b, a = normalBorderR, normalBorderG, normalBorderB, normalBorderA
+
+			if show then
+				r, g, b, a =
+					self.colorEssenceBurstBorder.r,
+					self.colorEssenceBurstBorder.g,
+					self.colorEssenceBurstBorder.b,
+					self.colorEssenceBurstBorder.a
+			end
+
+			for i = 1, 6 do
+				self:GetStatusBarAtIndex(i).Border:SetBackdropBorderColor(r, g, b, a)
+			end
+
 			return
 		end
 
@@ -131,10 +164,20 @@ table.insert(Private.LoginFnQueue, function()
 			end
 		end
 
+		if EssencesSaved.Settings.ShowCantCastOpacity and currentPower < spenderCost then
+			a = self.availableEssenceBursts > 0 and 1 or 0.5
+		end
+
 		for i = 1, 6 do
 			local statusBar = self:GetStatusBarAtIndex(i)
-			statusBar:SetStatusBarColor(r, g, b, a)
+			local barR, barG, barB, barA = r, g, b, a
 
+			if EssencesSaved.Settings.ShowRecharging and i == currentPower + 1 and i <= maxPower then
+				local dark = 1 - EssencesSaved.Settings.RechargingDarkness
+				barR, barG, barB = r * dark, g * dark, b * dark
+			end
+
+			statusBar:SetStatusBarColor(barR, barG, barB, barA)
 			statusBar.Background:SetShown(EssencesSaved.Settings.ShowBackground)
 
 			if EssencesSaved.Settings.ShowBackground then
@@ -273,9 +316,18 @@ table.insert(Private.LoginFnQueue, function()
 	end
 
 	Private.EventRegistry:RegisterCallback(Private.Enum.Events.SETTING_CHANGED, function(self, key, value)
-		if key == Private.Settings.Keys.ShowGlow or key == Private.Settings.Keys.UseColors then
+		if
+			key == Private.Settings.Keys.ShowGlow
+			or key == Private.Settings.Keys.EssenceBurstIndicator
+			or key == Private.Settings.Keys.UseColors
+			or key == Private.Settings.Keys.ShowCantCastOpacity
+			or key == Private.Settings.Keys.ShowRecharging
+		then
 			RegisterEvents()
 			frame:UpdateBarColors(frame:GetCurrentPower())
+		elseif key == Private.Settings.Keys.EssenceBurstBorderColor then
+			frame.colorEssenceBurstBorder = HexStringToTable(value)
+			frame:ToggleGlow(frame.availableEssenceBursts > 0)
 		elseif key == Private.Settings.Keys.BaseColor then
 			frame.colorBase = HexStringToTable(value)
 			frame:UpdateBarColors(frame:GetCurrentPower())
@@ -285,7 +337,11 @@ table.insert(Private.LoginFnQueue, function()
 		elseif key == Private.Settings.Keys.NearlyCapColor then
 			frame.colorNearlyCap = HexStringToTable(value)
 			frame:UpdateBarColors(frame:GetCurrentPower())
-		elseif key == Private.Settings.Keys.ShowBackground or key == Private.Settings.Keys.BackgroundBrightness then
+		elseif
+			key == Private.Settings.Keys.ShowBackground
+			or key == Private.Settings.Keys.BackgroundBrightness
+			or key == Private.Settings.Keys.RechargingDarkness
+		then
 			frame:UpdateBarColors(frame:GetCurrentPower())
 		elseif
 			key == Private.Settings.Keys.OffsetX
@@ -329,10 +385,20 @@ table.insert(Private.LoginFnQueue, function()
 		return 1 / (info.castTime / 2000)
 	end
 
+	local prevPower = 0
+	local prevPartial = 0
+
 	---@param self StatusBar
 	---@param elapsed number
 	local function OnUpdate(self, elapsed)
 		local actual = frame:GetPartialPower()
+
+		if actual > prevPartial then
+			prevPartial = actual
+		else
+			actual = prevPartial
+		end
+
 		local smooth = math.min(1, self:GetValue() + elapsed * frame:GetRechargeRate())
 
 		self:SetValue(math.max(smooth, actual))
@@ -349,11 +415,17 @@ table.insert(Private.LoginFnQueue, function()
 			local currentPower = self:GetCurrentPower()
 			local maxPower = self:GetMaxPower()
 
+			if currentPower > prevPower then
+				prevPartial = 0
+			end
+
+			prevPower = currentPower
+
 			for i = 1, 6 do
 				local statusBar = self:GetStatusBarAtIndex(i)
 
 				if i == currentPower + 1 and i <= maxPower then
-					statusBar:SetValue(self:GetPartialPower())
+					statusBar:SetValue(math.max(self:GetPartialPower(), prevPartial))
 					statusBar:SetScript("OnUpdate", OnUpdate)
 				elseif i <= currentPower then
 					statusBar:SetScript("OnUpdate", nil)
@@ -438,6 +510,12 @@ table.insert(Private.LoginFnQueue, function()
 					self:UpdateBarColors(self:GetCurrentPower())
 				end)
 			end
+		elseif event == "PLAYER_CAN_GLIDE_CHANGED" then
+			if EssencesSaved.Settings.HideWhileSkyriding and not InCombatLockdown() then
+				local canGlide = ...
+
+				self:SetShown(not canGlide)
+			end
 		elseif event == "FIRST_FRAME_RENDERED" then
 			EssentialCooldownViewer:HookScript("OnSizeChanged", function()
 				local nextWidth = EssentialCooldownViewer:GetWidth()
@@ -464,6 +542,7 @@ table.insert(Private.LoginFnQueue, function()
 	frame:RegisterUnitEvent("UNIT_MAXPOWER", "player")
 	frame:RegisterEvent("SPELLS_CHANGED")
 	frame:RegisterEvent("FIRST_FRAME_RENDERED")
+	frame:RegisterEvent("PLAYER_CAN_GLIDE_CHANGED")
 	frame:SetScript("OnEvent", frame.OnEvent)
 
 	function frame:OnHide()
@@ -568,6 +647,161 @@ table.insert(Private.LoginFnQueue, function()
 					desc = Private.L.Settings.ShowBackgroundTooltip,
 					get = Get,
 					set = Set,
+				}
+			end
+
+			if key == Private.Settings.Keys.ShowCantCastOpacity then
+				local function Get(_)
+					return EssencesSaved.Settings.ShowCantCastOpacity
+				end
+
+				local function Set(_, value)
+					if EssencesSaved.Settings.ShowCantCastOpacity ~= value then
+						EssencesSaved.Settings.ShowCantCastOpacity = value
+						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
+					end
+				end
+
+				---@type LibEditModeCheckbox
+				return {
+					name = Private.L.Settings.ShowCantCastOpacityLabel,
+					kind = Enum.EditModeSettingDisplayType.Checkbox,
+					default = defaults.ShowCantCastOpacity,
+					desc = Private.L.Settings.ShowCantCastOpacityTooltip,
+					get = Get,
+					set = Set,
+				}
+			end
+
+			if key == Private.Settings.Keys.EssenceBurstIndicator then
+				local function Generator(_, rootDescription)
+					for id, label in pairs(Private.L.Settings.EssenceBurstIndicatorLabels) do
+						local function IsEnabled()
+							return EssencesSaved.Settings.EssenceBurstIndicator == id
+						end
+
+						local function SetProxy()
+							if EssencesSaved.Settings.EssenceBurstIndicator ~= id then
+								EssencesSaved.Settings.EssenceBurstIndicator = id
+								Private.EventRegistry:TriggerEvent(
+									Private.Enum.Events.SETTING_CHANGED,
+									Private.Settings.Keys.EssenceBurstIndicator,
+									id
+								)
+							end
+						end
+
+						rootDescription:CreateRadio(label, IsEnabled, SetProxy)
+					end
+				end
+
+				---@type LibEditModeDropdown
+				return {
+					name = Private.L.Settings.EssenceBurstIndicatorLabel,
+					kind = Enum.EditModeSettingDisplayType.Dropdown,
+					default = defaults.EssenceBurstIndicator,
+					desc = Private.L.Settings.EssenceBurstIndicatorTooltip,
+					generator = Generator,
+					set = function() end,
+				}
+			end
+
+			if key == Private.Settings.Keys.EssenceBurstBorderColor then
+				local function Get(_)
+					return CreateColorFromHexString(EssencesSaved.Settings.EssenceBurstBorderColor)
+				end
+
+				local function Set(_, value)
+					local hex = value:GenerateHexColor()
+
+					if EssencesSaved.Settings.EssenceBurstBorderColor ~= hex then
+						EssencesSaved.Settings.EssenceBurstBorderColor = hex
+						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, hex)
+					end
+				end
+
+				---@type LibEditModeColorPicker
+				return {
+					name = Private.L.Settings.EssenceBurstBorderColorLabel,
+					kind = LibEditMode.SettingType.ColorPicker,
+					default = CreateColorFromHexString(defaults.EssenceBurstBorderColor),
+					desc = Private.L.Settings.EssenceBurstBorderColorTooltip,
+					get = Get,
+					set = Set,
+				}
+			end
+
+			if key == Private.Settings.Keys.ShowRecharging then
+				local function Get(_)
+					return EssencesSaved.Settings.ShowRecharging
+				end
+
+				local function Set(_, value)
+					if EssencesSaved.Settings.ShowRecharging ~= value then
+						EssencesSaved.Settings.ShowRecharging = value
+						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
+					end
+				end
+
+				---@type LibEditModeCheckbox
+				return {
+					name = Private.L.Settings.ShowRechargingLabel,
+					kind = Enum.EditModeSettingDisplayType.Checkbox,
+					default = defaults.ShowRecharging,
+					desc = Private.L.Settings.ShowRechargingTooltip,
+					get = Get,
+					set = Set,
+				}
+			end
+
+			if key == Private.Settings.Keys.HideWhileSkyriding then
+				local function Get(_)
+					return EssencesSaved.Settings.HideWhileSkyriding
+				end
+
+				local function Set(_, value)
+					if EssencesSaved.Settings.HideWhileSkyriding ~= value then
+						EssencesSaved.Settings.HideWhileSkyriding = value
+						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
+					end
+				end
+
+				---@type LibEditModeCheckbox
+				return {
+					name = Private.L.Settings.HideWhileSkyridingLabel,
+					kind = Enum.EditModeSettingDisplayType.Checkbox,
+					default = defaults.HideWhileSkyriding,
+					desc = Private.L.Settings.HideWhileSkyridingTooltip,
+					get = Get,
+					set = Set,
+				}
+			end
+
+			if key == Private.Settings.Keys.RechargingDarkness then
+				local sliderSettings = Private.Settings.GetSliderSettingsForKey(key)
+
+				local function Get(_)
+					return EssencesSaved.Settings.RechargingDarkness
+				end
+
+				local function Set(_, value)
+					if EssencesSaved.Settings.RechargingDarkness ~= value then
+						EssencesSaved.Settings.RechargingDarkness = value
+						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
+					end
+				end
+
+				---@type LibEditModeSlider
+				return {
+					name = Private.L.Settings.RechargingDarknessLabel,
+					kind = Enum.EditModeSettingDisplayType.Slider,
+					default = defaults.RechargingDarkness,
+					desc = Private.L.Settings.RechargingDarknessTooltip,
+					get = Get,
+					set = Set,
+					minValue = sliderSettings.min,
+					maxValue = sliderSettings.max,
+					valueStep = sliderSettings.step,
 				}
 			end
 

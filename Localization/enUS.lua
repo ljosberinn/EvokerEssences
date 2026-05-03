@@ -5,12 +5,26 @@ local L = Private.L
 L.Settings = {}
 L.EditMode = {}
 
-L.Settings.ShowGlowLabel = "Show Glow"
+L.Settings.ShowGlowLabel = "Show Essence Burst Indicator"
 L.Settings.ShowGlowTooltip = nil
+L.Settings.EssenceBurstIndicatorLabel = "Essence Burst Indicator"
+L.Settings.EssenceBurstIndicatorTooltip = "How to show available Essence Burst procs."
+L.Settings.EssenceBurstIndicatorLabels = {
+	[Private.Enum.EssenceBurstIndicator.Glow] = "Glow",
+	[Private.Enum.EssenceBurstIndicator.Border] = "Border Color",
+}
+L.Settings.EssenceBurstBorderColorLabel = "Essence Burst Border Color"
+L.Settings.EssenceBurstBorderColorTooltip = "Border color used when Essence Burst is available."
 L.Settings.UseColorsLabel = "Use Colors"
 L.Settings.UseColorsTooltip = nil
+L.Settings.ShowCantCastOpacityLabel = "Dim When Unable To Cast"
+L.Settings.ShowCantCastOpacityTooltip = "Lower opacity when you do not have enough essences to cast a spender."
 L.Settings.ShowBackgroundLabel = "Show Background"
 L.Settings.ShowBackgroundTooltip = nil
+L.Settings.ShowRechargingLabel = "Show Recharging"
+L.Settings.ShowRechargingTooltip = "Darken the essence currently recharging."
+L.Settings.HideWhileSkyridingLabel = "Hide While Skyriding"
+L.Settings.HideWhileSkyridingTooltip = "Hide the essence bar only while Skyriding is available on your current mount."
 
 L.Settings.BaseColorLabel = "Base Color"
 L.Settings.BaseColorTooltip = nil
@@ -18,6 +32,9 @@ L.Settings.CapColorLabel = "Cap Color"
 L.Settings.CapColorTooltip = "Color used when at maximum essences."
 L.Settings.NearlyCapColorLabel = "Nearly Cap Color"
 L.Settings.NearlyCapColorTooltip = "Color used when one essence below the maximum."
+L.Settings.RechargingDarknessLabel = "Recharging Darkness"
+L.Settings.RechargingDarknessTooltip =
+	"Darkens the current bar color for the essence currently recharging. 0 = unchanged, 1 = black."
 
 L.Settings.OffsetXLabel = "Offset X"
 L.Settings.OffsetXTooltip = nil

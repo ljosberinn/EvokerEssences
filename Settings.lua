@@ -6,10 +6,16 @@ Private.Settings = {}
 
 Private.Settings.Keys = {
 	ShowGlow = "SHOW_GLOW",
+	EssenceBurstIndicator = "ESSENCE_BURST_INDICATOR",
+	EssenceBurstBorderColor = "ESSENCE_BURST_BORDER_COLOR",
 	UseColors = "USE_COLORS",
+	ShowCantCastOpacity = "SHOW_CANT_CAST_OPACITY",
+	ShowRecharging = "SHOW_RECHARGING",
+	HideWhileSkyriding = "HIDE_WHILE_SKYRIDING",
 	BaseColor = "BASE_COLOR",
 	CapColor = "CAP_COLOR",
 	NearlyCapColor = "NEARLY_CAP_COLOR",
+	RechargingDarkness = "RECHARGING_DARKNESS",
 	ShowBackground = "SHOW_BACKGROUND",
 	OffsetX = "OFFSET_X",
 	OffsetY = "OFFSET_Y",
@@ -29,10 +35,16 @@ function Private.Settings.GetPresetValues(preset)
 
 	return {
 		ShowGlow = isXeph,
+		EssenceBurstIndicator = Private.Enum.EssenceBurstIndicator.Glow,
+		EssenceBurstBorderColor = CreateColor(1, 0.82, 0):GenerateHexColor(),
 		UseColors = isXeph,
+		ShowCantCastOpacity = false,
+		ShowRecharging = false,
+		HideWhileSkyriding = false,
 		BaseColor = CreateColor(0.2, 0.58, 0.5):GenerateHexColor(),
 		CapColor = CreateColor(0.93, 0.21, 0.35):GenerateHexColor(),
 		NearlyCapColor = CreateColor(1, 0.5, 0.2):GenerateHexColor(),
+		RechargingDarkness = 0.5,
 		ShowBackground = true,
 		OffsetX = 0,
 		OffsetY = isXeph and 3 or 2,
@@ -53,6 +65,14 @@ end
 ---@param key string
 ---@return SliderSettings
 function Private.Settings.GetSliderSettingsForKey(key)
+	if key == Private.Settings.Keys.RechargingDarkness then
+		return {
+			min = 0,
+			max = 1,
+			step = 0.01,
+		}
+	end
+
 	if key == Private.Settings.Keys.OffsetX or key == Private.Settings.Keys.OffsetY then
 		return {
 			min = -1000,
@@ -100,10 +120,16 @@ function Private.Settings.GetDisplayOrder()
 	return {
 		Private.Settings.Keys.Preset,
 		Private.Settings.Keys.ShowGlow,
+		Private.Settings.Keys.EssenceBurstIndicator,
+		Private.Settings.Keys.EssenceBurstBorderColor,
 		Private.Settings.Keys.UseColors,
+		Private.Settings.Keys.ShowCantCastOpacity,
+		Private.Settings.Keys.ShowRecharging,
+		Private.Settings.Keys.HideWhileSkyriding,
 		Private.Settings.Keys.BaseColor,
 		Private.Settings.Keys.CapColor,
 		Private.Settings.Keys.NearlyCapColor,
+		Private.Settings.Keys.RechargingDarkness,
 		Private.Settings.Keys.ShowBackground,
 		Private.Settings.Keys.BackgroundBrightness,
 		Private.Settings.Keys.OffsetX,
