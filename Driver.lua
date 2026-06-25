@@ -232,6 +232,13 @@ table.insert(Private.LoginFnQueue, function()
 			return
 		end
 
+
+		local maxPower = self:GetMaxPower()
+
+		if maxPower == 0 then
+			return
+		end
+
 		PixelUtil.SetSize(
 			frame,
 			math.max(EssencesSaved.Settings.MinWidth, cdvWidth),
@@ -248,7 +255,6 @@ table.insert(Private.LoginFnQueue, function()
 		)
 
 		local widthToDistribute = math.floor(math.max(cdvWidth + 0.5, EssencesSaved.Settings.MinWidth))
-		local maxPower = self:GetMaxPower()
 		local totalBarSpace = widthToDistribute - (maxPower - 1) * EssencesSaved.Settings.Gap
 		local individualBarWidth = math.floor(totalBarSpace / maxPower)
 		local extraPixels = totalBarSpace % maxPower
