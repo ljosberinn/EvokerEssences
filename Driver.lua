@@ -10,13 +10,19 @@ table.insert(Private.LoginFnQueue, function()
 	local presSpecId = 1468
 	local normalBorderR, normalBorderG, normalBorderB, normalBorderA = 0.1, 0.1, 0.1, 1
 
+	local parentFrame = EssentialCooldownViewer
+
+	if C_AddOns.DoesAddOnExist("Coolinator") and C_AddOns.IsAddOnLoaded("Coolinator") and CoolinatorPrimaryGroupAnchor then
+		parentFrame = CoolinatorPrimaryGroupAnchor
+	end
+
 	---@type EssencesParentFrame
-	local frame = CreateFrame("Frame", "EssencesParentFrame", EssentialCooldownViewer)
+	local frame = CreateFrame("Frame", "EssencesParentFrame", parentFrame)
 	frame:ClearAllPoints()
 	PixelUtil.SetPoint(
 		frame,
 		"BOTTOM",
-		EssentialCooldownViewer,
+		parentFrame,
 		"TOP",
 		EssencesSaved.Settings.OffsetX,
 		EssencesSaved.Settings.OffsetY
@@ -226,12 +232,11 @@ table.insert(Private.LoginFnQueue, function()
 	end
 
 	function frame:Relayout()
-		local cdvWidth = EssentialCooldownViewer:GetWidth()
+		local cdvWidth = parentFrame:GetWidth()
 
 		if cdvWidth <= 2 then
 			return
 		end
-
 
 		local maxPower = self:GetMaxPower()
 
@@ -248,7 +253,7 @@ table.insert(Private.LoginFnQueue, function()
 		PixelUtil.SetPoint(
 			frame,
 			"BOTTOM",
-			EssentialCooldownViewer,
+			parentFrame,
 			"TOP",
 			EssencesSaved.Settings.OffsetX,
 			EssencesSaved.Settings.OffsetY
@@ -523,14 +528,16 @@ table.insert(Private.LoginFnQueue, function()
 				self:SetShown(not canGlide)
 			end
 		elseif event == "FIRST_FRAME_RENDERED" then
-			EssentialCooldownViewer:HookScript("OnSizeChanged", function()
-				local nextWidth = EssentialCooldownViewer:GetWidth()
+			parentFrame:HookScript("OnSizeChanged", function()
+				local nextWidth = parentFrame:GetWidth()
+
 
 				if nextWidth == frame:GetWidth() then
 					return
 				end
 
 				PixelUtil.SetSize(frame, nextWidth, EssencesSaved.Settings.BarHeight - 2)
+
 				frame:Relayout()
 			end)
 
@@ -550,10 +557,10 @@ table.insert(Private.LoginFnQueue, function()
 	frame:RegisterEvent("FIRST_FRAME_RENDERED")
 	frame:RegisterEvent("PLAYER_CAN_GLIDE_CHANGED")
 	frame:SetScript("OnEvent", frame.OnEvent)
+	frame:SetScript("OnHide", function()
+		frame:Relayout()
+	end)
 
-	function frame:OnHide()
-		self:Relayout()
-	end
 
 	do
 		local function CreateSetting(key, defaults)

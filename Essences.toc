@@ -6,6 +6,7 @@
 ## IconTexture: Interface\Icons\ability_evoker_essenceburst
 ## Category: Evoker
 ## SavedVariables: EssencesSaved
+## OptionalDeps: Coolinator
 
 ## X-Curse-Project-ID: 1488278
 ## X-Wago-ID: aN0X1PNj
@@ -20,6 +21,7 @@ Enum.lua
 Init.lua
 
 Localization\enUS.lua
+Localization\[TextLocale].lua [AllowLoadTextLocale deDE, frFR, zhCN, esES, esMX, koKR, ruRU, itIT, ptBR, zhTW]
 
 Settings.lua
 Driver.lua
