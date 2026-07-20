@@ -46,6 +46,7 @@
 ---@field GetStatusBarAtIndex fun(self: EssencesParentFrame, i: number): EssencesStatusBar
 ---@field Relayout fun(self: EssencesParentFrame)
 ---@field CountActiveEssenceBursts fun(self: EssencesParentFrame): number
+---@field RecountEssencesAfterOverlayHide fun(self: EssencesParentFrame)
 ---@field OnEvent fun(self: EssencesParentFrame, event: WowEvent, ...)
 ---@field GetRechargeRate fun(self: EssencesParentFrame): number
 
@@ -120,3 +121,17 @@
 
 ---@class LibEditModeColorPicker : LibEditModeSetting, LibEditModeGetterSetter
 ---@field hasOpacity boolean?
+
+---@class SpellActivationOverlayMixin
+---@field OnLoad fun(self: SpellActivationOverlayMixin)
+---@field OnEvent fun(self: SpellActivationOverlayMixin, event: WowEvent, ...)
+---@field ShowAllOverlays fun(self: SpellActivationOverlayMixin, spellID, texturePath, locationType, scale, r, g, b)
+---@field ShowOverlay fun(self: SpellActivationOverlayMixin, spellID, texturePath, locationType, scale, r, g, b)
+---@field GetOverlay fun(self: SpellActivationOverlayMixin, spellID, position)
+---@field HideOverlays fun(self: SpellActivationOverlayMixin, spellID: number)
+---@field HideAllOverlays fun(self: SpellActivationOverlayMixin)
+---@field ReleaseOverlay fun(self: SpellActivationOverlayMixin, overlay)
+---@field private overlaysInUse table
+---@field private FramePool
+
+SpellActivationOverlayFrame = CreateFrame("Frame", "SpellActivationOverlayFrame", UIParent, "SpellActivationOverlayMixin")

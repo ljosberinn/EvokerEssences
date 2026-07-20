@@ -55,7 +55,7 @@ table.insert(Private.LoginFnQueue, function()
 		return spellId == 356995 -- disintegrate
 			or spellId == 357211 -- pyre
 			or spellId == 364343 -- echo
-			or spellId == 395160 -- eruptionf
+			or spellId == 395160 -- eruption
 	end
 
 	function frame:IsEssenceBurst(spellId)
@@ -194,11 +194,9 @@ table.insert(Private.LoginFnQueue, function()
 	end
 
 	function frame:GetStatusBarAtIndex(i)
-		local key = "EssenceBar" .. i
-
-		if self[key] == nil then
+		if self[i] == nil then
 			---@type EssencesStatusBar
-			local statusBar = CreateFrame("StatusBar", key, self)
+			local statusBar = CreateFrame("StatusBar", "EssenceBar" .. i, self)
 			statusBar:SetStatusBarTexture(EssencesSaved.Settings.BarTexture)
 			local r, g, b, a = self.colorBase.r, self.colorBase.g, self.colorBase.b, self.colorBase.a
 			statusBar:SetStatusBarColor(r, g, b, a)
@@ -223,12 +221,12 @@ table.insert(Private.LoginFnQueue, function()
 			statusBar.Background:SetShown(EssencesSaved.Settings.ShowBackground)
 			statusBar.elapsed = 0
 
-			self[key] = statusBar
+			self[i] = statusBar
 
 			return statusBar
 		end
 
-		return self[key]
+		return self[i]
 	end
 
 	function frame:Relayout()
@@ -293,16 +291,16 @@ table.insert(Private.LoginFnQueue, function()
 	end
 
 	function frame:CountActiveEssenceBursts()
-		---@type Frame[]
-		local children = { SpellActivationOverlayFrame:GetChildren() }
-
 		local active = 0
 
-		for i = 1, #children do
-			local child = children[i]
 
-			if child:IsShown() and self:IsEssenceBurst(child.spellID) then
-				active = active + 1
+		for spellID, overlays in pairs(SpellActivationOverlayFrame.overlaysInUse) do
+			if self:IsEssenceBurst(spellID) then
+				for _, overlay in pairs(overlays) do
+					if overlay:IsShown() then
+						active = active + 1
+					end
+				end
 			end
 		end
 
@@ -311,6 +309,17 @@ table.insert(Private.LoginFnQueue, function()
 
 	local function RegisterEvents()
 		if (EssencesSaved.Settings.UseColors and frame.specId ~= presSpecId) or EssencesSaved.Settings.ShowGlow then
+			if not C_CVar.GetCVarBool("displaySpellActivationOverlays") then
+				print(
+					string.format(
+						"[%s] unable to show essence burst highlights as the cvar '%s' is disabled. Run '/console %s 1' to enable, then /reload.",
+						addonName, "displaySpellActivationOverlays", "displaySpellActivationOverlays"
+					)
+				)
+
+				return
+			end
+
 			frame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
 			frame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
 		else
@@ -415,6 +424,19 @@ table.insert(Private.LoginFnQueue, function()
 		self:SetValue(math.max(smooth, actual))
 	end
 
+	function frame:RecountEssencesAfterOverlayHide()
+		local nextEssenceBurstCount = self:CountActiveEssenceBursts()
+
+		if self.availableEssenceBursts ~= nextEssenceBurstCount then
+			self.availableEssenceBursts = nextEssenceBurstCount
+			self:ToggleGlow(nextEssenceBurstCount > 0)
+			self:UpdateBarColors(self:GetCurrentPower())
+		end
+	end
+
+	-- pay cost upfront of this event which fires a bunch for no reason
+	local RecountEssencesAfterOverlayHideClosure = GenerateClosure(frame.RecountEssencesAfterOverlayHide, frame)
+
 	function frame:OnEvent(event, ...)
 		if event == "UNIT_POWER_FREQUENT" then
 			local unit, powerType = ...
@@ -455,10 +477,11 @@ table.insert(Private.LoginFnQueue, function()
 			local spellId = select(3, ...)
 
 			if self:IsDeepBreathLike(spellId) and self:KnowsImminentDestruction() then
-				self.lastImminentDestructionStart = GetTime() + 1
+				local now = GetTime()
+				self.lastImminentDestructionStart = now + 1
 
 				if self.specId == devaSpecId then
-					local imminentDestructionDiff = GetTime() - self.lastImminentDestructionStart
+					local imminentDestructionDiff = now - self.lastImminentDestructionStart
 
 					if imminentDestructionDiff > 30 then
 						self.imminentDestructionStacks = 0
@@ -499,27 +522,11 @@ table.insert(Private.LoginFnQueue, function()
 
 			-- this should only fire when resetting all spell overlay glows but fires at random times regardless
 			if spellId == nil then
-				local nextEssenceBurstCount = self:CountActiveEssenceBursts()
-
-				if self.availableEssenceBursts ~= nextEssenceBurstCount then
-					self.availableEssenceBursts = nextEssenceBurstCount
-					self:ToggleGlow(nextEssenceBurstCount > 0)
-					self:UpdateBarColors(self:GetCurrentPower())
-				end
+				self:RecountEssencesAfterOverlayHide()
 			elseif self:IsEssenceBurst(spellId) then
 				-- delay briefly as by the time this executes, the overlay is still animating out.
 				-- 0.2s is fast enough that you won't notice the delay
-				C_Timer.After(0.2, function()
-					local nextEssenceBurstCount = self:CountActiveEssenceBursts()
-
-					if self.availableEssenceBursts == nextEssenceBurstCount then
-						return
-					end
-
-					self.availableEssenceBursts = nextEssenceBurstCount
-					self:ToggleGlow(nextEssenceBurstCount > 0)
-					self:UpdateBarColors(self:GetCurrentPower())
-				end)
+				C_Timer.After(0.2, RecountEssencesAfterOverlayHideClosure)
 			end
 		elseif event == "PLAYER_CAN_GLIDE_CHANGED" then
 			if EssencesSaved.Settings.HideWhileSkyriding and not InCombatLockdown() then
