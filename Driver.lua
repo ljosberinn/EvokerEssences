@@ -198,6 +198,9 @@ table.insert(Private.LoginFnQueue, function()
 			---@type EssencesStatusBar
 			local statusBar = CreateFrame("StatusBar", "EssenceBar" .. i, self)
 			statusBar:SetStatusBarTexture(EssencesSaved.Settings.BarTexture)
+			local texture = statusBar:GetStatusBarTexture()
+			texture:SetTexelSnappingBias(0)
+			texture:SetSnapToPixelGrid(false)
 			local r, g, b, a = self.colorBase.r, self.colorBase.g, self.colorBase.b, self.colorBase.a
 			statusBar:SetStatusBarColor(r, g, b, a)
 
@@ -478,10 +481,11 @@ table.insert(Private.LoginFnQueue, function()
 
 			if self:IsDeepBreathLike(spellId) and self:KnowsImminentDestruction() then
 				local now = GetTime()
+				local previousStart = self.lastImminentDestructionStart
 				self.lastImminentDestructionStart = now + 1
 
 				if self.specId == devaSpecId then
-					local imminentDestructionDiff = now - self.lastImminentDestructionStart
+					local imminentDestructionDiff = now - previousStart
 
 					if imminentDestructionDiff > 30 then
 						self.imminentDestructionStacks = 0
@@ -567,7 +571,6 @@ table.insert(Private.LoginFnQueue, function()
 	frame:SetScript("OnHide", function()
 		frame:Relayout()
 	end)
-
 
 	do
 		local function CreateSetting(key, defaults)
