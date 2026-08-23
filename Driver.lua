@@ -170,7 +170,7 @@ table.insert(Private.LoginFnQueue, function()
 			end
 		end
 
-		if EssencesSaved.Settings.ShowCantCastOpacity and currentPower < spenderCost then
+		if (EssencesSaved.Settings.ShowCantCastOpacity or EssencesSaved.Settings.UseColors) and currentPower < spenderCost then
 			a = self.availableEssenceBursts > 0 and 1 or 0.5
 		end
 
@@ -311,18 +311,22 @@ table.insert(Private.LoginFnQueue, function()
 	end
 
 	local function RegisterEvents()
-		if (EssencesSaved.Settings.UseColors and frame.specId ~= presSpecId) or EssencesSaved.Settings.ShowGlow then
-			if not C_CVar.GetCVarBool("displaySpellActivationOverlays") then
-				print(
-					string.format(
-						"[%s] unable to show essence burst highlights as the cvar '%s' is disabled. Run '/console %s 1' to enable, then /reload.",
-						addonName, "displaySpellActivationOverlays", "displaySpellActivationOverlays"
-					)
+		local tracksEssenceBursts = EssencesSaved.Settings.ShowGlow
+			or EssencesSaved.Settings.ShowCantCastOpacity
+			or (EssencesSaved.Settings.UseColors and frame.specId ~= presSpecId)
+
+		if tracksEssenceBursts and not C_CVar.GetCVarBool("displaySpellActivationOverlays") then
+			print(
+				string.format(
+					"[%s] unable to show essence burst highlights as the cvar '%s' is disabled. Run '/console %s 1' to enable, then /reload.",
+					addonName, "displaySpellActivationOverlays", "displaySpellActivationOverlays"
 				)
+			)
 
-				return
-			end
+			tracksEssenceBursts = false
+		end
 
+		if tracksEssenceBursts then
 			frame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
 			frame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
 		else
@@ -331,7 +335,10 @@ table.insert(Private.LoginFnQueue, function()
 			frame.availableEssenceBursts = 0
 		end
 
-		if EssencesSaved.Settings.UseColors and frame.specId ~= presSpecId then
+		if
+			(EssencesSaved.Settings.UseColors or EssencesSaved.Settings.ShowCantCastOpacity)
+			and frame.specId ~= presSpecId
+		then
 			frame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
 		else
 			frame:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
@@ -474,8 +481,17 @@ table.insert(Private.LoginFnQueue, function()
 
 			self:UpdateBarColors(currentPower)
 		elseif event == "SPELLS_CHANGED" then
-			self.specId = PlayerUtil.GetCurrentSpecID()
+			local nextSpecId = PlayerUtil.GetCurrentSpecID()
+			local specChanged = nextSpecId ~= self.specId
+
+			self.specId = nextSpecId
 			RegisterEvents()
+
+			if specChanged and self.imminentDestructionStacks > 0 then
+				self.imminentDestructionStacks = 0
+				self.lastImminentDestructionStart = 0
+				self:UpdateBarColors(self:GetCurrentPower())
+			end
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			local spellId = select(3, ...)
 
@@ -495,16 +511,19 @@ table.insert(Private.LoginFnQueue, function()
 				else
 					self.imminentDestructionStacks = 6
 				end
+
+				self:UpdateBarColors(self:GetCurrentPower())
 			elseif self:IsSpender(spellId) then
 				if self.availableEssenceBursts == 0 and self.imminentDestructionStacks > 0 then
 					local imminentDestructionDiff = GetTime() - self.lastImminentDestructionStart
 
 					if imminentDestructionDiff > 30 then
 						self.imminentDestructionStacks = 0
-						return
+					else
+						self.imminentDestructionStacks = self.imminentDestructionStacks - 1
 					end
 
-					self.imminentDestructionStacks = self.imminentDestructionStacks - 1
+					self:UpdateBarColors(self:GetCurrentPower())
 				end
 			end
 		elseif event == "SPELL_ACTIVATION_OVERLAY_SHOW" then
@@ -531,6 +550,12 @@ table.insert(Private.LoginFnQueue, function()
 				-- delay briefly as by the time this executes, the overlay is still animating out.
 				-- 0.2s is fast enough that you won't notice the delay
 				C_Timer.After(0.2, RecountEssencesAfterOverlayHideClosure)
+			end
+		elseif event == "PLAYER_DEAD" then
+			if self.imminentDestructionStacks > 0 then
+				self.imminentDestructionStacks = 0
+				self.lastImminentDestructionStart = 0
+				self:UpdateBarColors(self:GetCurrentPower())
 			end
 		elseif event == "PLAYER_CAN_GLIDE_CHANGED" then
 			if EssencesSaved.Settings.HideWhileSkyriding and not InCombatLockdown() then
@@ -567,6 +592,7 @@ table.insert(Private.LoginFnQueue, function()
 	frame:RegisterEvent("SPELLS_CHANGED")
 	frame:RegisterEvent("FIRST_FRAME_RENDERED")
 	frame:RegisterEvent("PLAYER_CAN_GLIDE_CHANGED")
+	frame:RegisterEvent("PLAYER_DEAD")
 	frame:SetScript("OnEvent", frame.OnEvent)
 	frame:SetScript("OnHide", function()
 		frame:Relayout()
