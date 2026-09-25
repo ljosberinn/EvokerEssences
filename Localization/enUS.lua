@@ -7,6 +7,10 @@ L.EditMode = {}
 
 L.Settings.ShowGlowLabel = "Show Essence Burst Indicator"
 L.Settings.ShowGlowTooltip = nil
+L.Settings.ChangeColorOnEssenceBurstLabel = "Change Color on Essence Burst"
+L.Settings.ChangeColorOnEssenceBurstTooltip = "Use a separate color while Essence Burst is available."
+L.Settings.EssenceBurstColorLabel = "Essence Burst Color"
+L.Settings.EssenceBurstColorTooltip = "Color used while Essence Burst is available."
 L.Settings.EssenceBurstIndicatorLabel = "Essence Burst Indicator"
 L.Settings.EssenceBurstIndicatorTooltip = "How to show available Essence Burst procs."
 L.Settings.EssenceBurstIndicatorLabels = {

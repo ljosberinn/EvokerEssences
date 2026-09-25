@@ -6,6 +6,8 @@ Private.Settings = {}
 
 Private.Settings.Keys = {
 	ShowGlow = "SHOW_GLOW",
+	ChangeColorOnEssenceBurst = "CHANGE_COLOR_ON_ESSENCE_BURST",
+	EssenceBurstColor = "ESSENCE_BURST_COLOR",
 	EssenceBurstIndicator = "ESSENCE_BURST_INDICATOR",
 	EssenceBurstBorderColor = "ESSENCE_BURST_BORDER_COLOR",
 	UseColors = "USE_COLORS",
@@ -35,6 +37,8 @@ function Private.Settings.GetPresetValues(preset)
 
 	return {
 		ShowGlow = isXeph,
+		ChangeColorOnEssenceBurst = false,
+		EssenceBurstColor = CreateColor(1, 0.82, 0):GenerateHexColor(),
 		EssenceBurstIndicator = Private.Enum.EssenceBurstIndicator.Glow,
 		EssenceBurstBorderColor = CreateColor(1, 0.82, 0):GenerateHexColor(),
 		UseColors = isXeph,
@@ -120,6 +124,8 @@ function Private.Settings.GetDisplayOrder()
 	return {
 		Private.Settings.Keys.Preset,
 		Private.Settings.Keys.ShowGlow,
+		Private.Settings.Keys.ChangeColorOnEssenceBurst,
+		Private.Settings.Keys.EssenceBurstColor,
 		Private.Settings.Keys.EssenceBurstIndicator,
 		Private.Settings.Keys.EssenceBurstBorderColor,
 		Private.Settings.Keys.UseColors,

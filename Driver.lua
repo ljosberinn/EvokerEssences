@@ -50,6 +50,7 @@ table.insert(Private.LoginFnQueue, function()
 	frame.colorCap = HexStringToTable(EssencesSaved.Settings.CapColor)
 	frame.colorNearlyCap = HexStringToTable(EssencesSaved.Settings.NearlyCapColor)
 	frame.colorEssenceBurstBorder = HexStringToTable(EssencesSaved.Settings.EssenceBurstBorderColor)
+	frame.colorEssenceBurst = HexStringToTable(EssencesSaved.Settings.EssenceBurstColor)
 
 	function frame:IsSpender(spellId)
 		return spellId == 356995 -- disintegrate
@@ -168,6 +169,14 @@ table.insert(Private.LoginFnQueue, function()
 			elseif currentPower < spenderCost then
 				a = self.availableEssenceBursts > 0 and 1 or 0.5
 			end
+		end
+
+		if EssencesSaved.Settings.ChangeColorOnEssenceBurst and self.availableEssenceBursts > 0 then
+			r, g, b, a =
+				self.colorEssenceBurst.r,
+				self.colorEssenceBurst.g,
+				self.colorEssenceBurst.b,
+				self.colorEssenceBurst.a
 		end
 
 		if (EssencesSaved.Settings.ShowCantCastOpacity or EssencesSaved.Settings.UseColors) and currentPower < spenderCost then
@@ -314,6 +323,7 @@ table.insert(Private.LoginFnQueue, function()
 		local tracksEssenceBursts = EssencesSaved.Settings.ShowGlow
 			or EssencesSaved.Settings.ShowCantCastOpacity
 			or (EssencesSaved.Settings.UseColors and frame.specId ~= presSpecId)
+			or EssencesSaved.Settings.ChangeColorOnEssenceBurst
 
 		if tracksEssenceBursts and not C_CVar.GetCVarBool("displaySpellActivationOverlays") then
 			print(
@@ -349,6 +359,7 @@ table.insert(Private.LoginFnQueue, function()
 		if
 			key == Private.Settings.Keys.ShowGlow
 			or key == Private.Settings.Keys.EssenceBurstIndicator
+			or key == Private.Settings.Keys.ChangeColorOnEssenceBurst
 			or key == Private.Settings.Keys.UseColors
 			or key == Private.Settings.Keys.ShowCantCastOpacity
 			or key == Private.Settings.Keys.ShowRecharging
@@ -358,6 +369,9 @@ table.insert(Private.LoginFnQueue, function()
 		elseif key == Private.Settings.Keys.EssenceBurstBorderColor then
 			frame.colorEssenceBurstBorder = HexStringToTable(value)
 			frame:ToggleGlow(frame.availableEssenceBursts > 0)
+		elseif key == Private.Settings.Keys.EssenceBurstColor then
+			frame.colorEssenceBurst = HexStringToTable(value)
+			frame:UpdateBarColors(frame:GetCurrentPower())
 		elseif key == Private.Settings.Keys.BaseColor then
 			frame.colorBase = HexStringToTable(value)
 			frame:UpdateBarColors(frame:GetCurrentPower())
@@ -653,6 +667,28 @@ table.insert(Private.LoginFnQueue, function()
 				}
 			end
 
+			if key == Private.Settings.Keys.ChangeColorOnEssenceBurst then
+				local function Get(_)
+					return EssencesSaved.Settings.ChangeColorOnEssenceBurst
+				end
+
+				local function Set(_, value)
+					if EssencesSaved.Settings.ChangeColorOnEssenceBurst ~= value then
+						EssencesSaved.Settings.ChangeColorOnEssenceBurst = value
+						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
+					end
+				end
+
+				return {
+					name = Private.L.Settings.ChangeColorOnEssenceBurstLabel,
+					kind = Enum.EditModeSettingDisplayType.Checkbox,
+					default = defaults.ChangeColorOnEssenceBurst,
+					desc = Private.L.Settings.ChangeColorOnEssenceBurstTooltip,
+					get = Get,
+					set = Set,
+				}
+			end
+
 			if key == Private.Settings.Keys.UseColors then
 				local function Get(_)
 					return EssencesSaved.Settings.UseColors
@@ -775,6 +811,29 @@ table.insert(Private.LoginFnQueue, function()
 					kind = LibEditMode.SettingType.ColorPicker,
 					default = CreateColorFromHexString(defaults.EssenceBurstBorderColor),
 					desc = Private.L.Settings.EssenceBurstBorderColorTooltip,
+					get = Get,
+					set = Set,
+				}
+			end
+
+			if key == Private.Settings.Keys.EssenceBurstColor then
+				local function Get(_)
+					return CreateColorFromHexString(EssencesSaved.Settings.EssenceBurstColor)
+				end
+
+				local function Set(_, value)
+					local hex = value:GenerateHexColor()
+					if EssencesSaved.Settings.EssenceBurstColor ~= hex then
+						EssencesSaved.Settings.EssenceBurstColor = hex
+						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, hex)
+					end
+				end
+
+				return {
+					name = Private.L.Settings.EssenceBurstColorLabel,
+					kind = LibEditMode.SettingType.ColorPicker,
+					default = CreateColorFromHexString(defaults.EssenceBurstColor),
+					desc = Private.L.Settings.EssenceBurstColorTooltip,
 					get = Get,
 					set = Set,
 				}
