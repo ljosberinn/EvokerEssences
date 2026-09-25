@@ -33,6 +33,7 @@
 ---@field colorCap EssencesColor
 ---@field colorNearlyCap EssencesColor
 ---@field colorEssenceBurstBorder EssencesColor
+---@field colorEssenceBurst EssencesColor
 ---@field IsSpender fun(self: EssencesParentFrame, spellId: number): boolean
 ---@field IsEssenceBurst fun(self: EssencesParentFrame, spellId: number): boolean
 ---@field GetCurrentPower fun(self: EssencesParentFrame): number
@@ -55,6 +56,8 @@
 
 ---@class EssencesSavedSettings
 ---@field ShowGlow boolean
+---@field ChangeColorOnEssenceBurst boolean
+---@field EssenceBurstColor string
 ---@field EssenceBurstIndicator number
 ---@field EssenceBurstBorderColor string
 ---@field UseColors boolean

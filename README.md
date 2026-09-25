@@ -14,4 +14,5 @@ Features:
   - configurable darkness when you're recharging an essence
   - orange when you're recharging your final essence
   - red when you're capped on essences
+  - color change on essence burst
 - currently has two styles; @Krealle (default) and @ljosberinn, which is only active if your character name matches mine. to override it, edit `Init.lua` and add `isXeph = true` below the name check
