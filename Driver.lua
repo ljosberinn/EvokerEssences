@@ -18,9 +18,9 @@ table.insert(Private.LoginFnQueue, function()
 
 	---@type EssencesParentFrame
 	local frame = CreateFrame("Frame", "EssencesParentFrame", parentFrame)
+	frame:SetRoundLayoutToNearestPixel(true)
 	frame:ClearAllPoints()
-	PixelUtil.SetPoint(
-		frame,
+	frame:SetPoint(
 		"BOTTOM",
 		parentFrame,
 		"TOP",
@@ -197,6 +197,7 @@ table.insert(Private.LoginFnQueue, function()
 		if self[i] == nil then
 			---@type EssencesStatusBar
 			local statusBar = CreateFrame("StatusBar", "EssenceBar" .. i, self)
+			statusBar:SetRoundLayoutToNearestPixel(true)
 			statusBar:SetStatusBarTexture(EssencesSaved.Settings.BarTexture)
 			local texture = statusBar:GetStatusBarTexture()
 			texture:SetTexelSnappingBias(0)
@@ -245,14 +246,12 @@ table.insert(Private.LoginFnQueue, function()
 			return
 		end
 
-		PixelUtil.SetSize(
-			frame,
+		frame:SetSize(
 			math.max(EssencesSaved.Settings.MinWidth, cdvWidth),
 			EssencesSaved.Settings.BarHeight - 2
 		)
 		frame:ClearAllPoints()
-		PixelUtil.SetPoint(
-			frame,
+		frame:SetPoint(
 			"BOTTOM",
 			parentFrame,
 			"TOP",
@@ -275,10 +274,10 @@ table.insert(Private.LoginFnQueue, function()
 				statusBar:ClearAllPoints()
 
 				if i == 1 then
-					PixelUtil.SetPoint(statusBar, "LEFT", self, "LEFT", 0, 0)
+					statusBar:SetPoint("LEFT", self, "LEFT", 0, 0)
 				else
 					local previousStatusBar = self:GetStatusBarAtIndex(i - 1)
-					PixelUtil.SetPoint(statusBar, "LEFT", previousStatusBar, "RIGHT", EssencesSaved.Settings.Gap, 0)
+					statusBar:SetPoint("LEFT", previousStatusBar, "RIGHT", EssencesSaved.Settings.Gap, 0)
 				end
 
 				local width = individualBarWidth + (i <= extraPixels and 1 or 0)
@@ -572,7 +571,7 @@ table.insert(Private.LoginFnQueue, function()
 					return
 				end
 
-				PixelUtil.SetSize(frame, nextWidth, EssencesSaved.Settings.BarHeight - 2)
+				frame:SetSize(nextWidth, EssencesSaved.Settings.BarHeight - 2)
 
 				frame:Relayout()
 			end)

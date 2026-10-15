@@ -122,6 +122,9 @@
 ---@class LibEditModeColorPicker : LibEditModeSetting, LibEditModeGetterSetter
 ---@field hasOpacity boolean?
 
+---@class ScriptRegion
+---@field SetRoundLayoutToNearestPixel fun(self: ScriptRegion, enabled: boolean)
+
 ---@class SpellActivationOverlayMixin
 ---@field OnLoad fun(self: SpellActivationOverlayMixin)
 ---@field OnEvent fun(self: SpellActivationOverlayMixin, event: WowEvent, ...)
