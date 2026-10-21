@@ -4,7 +4,6 @@ local addonName, Private = ...
 table.insert(Private.LoginFnQueue, function()
 	local LibEditMode = LibStub("LibEditMode")
 	local LibSharedMedia = LibStub("LibSharedMedia-3.0")
-	local LibCustomGlow = LibStub("LibCustomGlow-1.0")
 
 	local devaSpecId = 1467
 	local presSpecId = 1468
@@ -89,11 +88,89 @@ table.insert(Private.LoginFnQueue, function()
 			or C_SpellBook.IsSpellKnown(459537, Enum.SpellBookSpellBank.Player) -- aug
 	end
 
+	local glowDashCount = 8
+	-- row y is opaque for x < y, so the sampled row sets how much of each dash spacing is lit
+	local glowDashTexture = [[Interface\AddOns\Essences\Media\PixelGlowDashes.tga]]
+	local glowDashTextureSize = 256
+
+	---@param glow EssencesPixelGlowFrame
+	local function LayoutGlow(glow)
+		local width, height = glow:GetSize()
+		local spacing = 2 * (width + height) / glowDashCount
+
+		if not (spacing > 0) then
+			return
+		end
+
+		-- LibCustomGlow's default dash length, which caps at the height of a wide and short frame, plus
+		-- the line thickness its dash rects span on top of that
+		local targetWidth, targetHeight = frame:GetSize()
+		local length = math.min(
+			math.floor((targetWidth + targetHeight) * (2 / glowDashCount - 0.1)),
+			targetWidth,
+			targetHeight
+		) + 1
+		local row = math.max(
+			0,
+			math.min(glowDashTextureSize - 1, math.floor(length / spacing * glowDashTextureSize + 0.5))
+		)
+		local v = (row + 0.5) / glowDashTextureSize
+
+		-- u runs clockwise along the perimeter from the top-left corner in dash spacings, so each side
+		-- continues the pattern where the previous one ends and dashes flow around the corners
+		local topRight = width / spacing
+		local bottomRight = (width + height) / spacing
+		local bottomLeft = (2 * width + height) / spacing
+		-- LibCustomGlow starts with a dash centered on the bottom-left corner
+		local phase = (row / glowDashTextureSize / 2 - bottomLeft) % 1
+
+		glow.Top:SetTexCoord(phase, topRight + phase, v, v)
+		glow.Right:SetTexCoord(topRight + phase, v, bottomRight + phase, v, topRight + phase, v, bottomRight + phase, v)
+		glow.Bottom:SetTexCoord(bottomLeft + phase, bottomRight + phase, v, v)
+		glow.Left:SetTexCoord(
+			glowDashCount + phase,
+			v,
+			bottomLeft + phase,
+			v,
+			glowDashCount + phase,
+			v,
+			bottomLeft + phase,
+			v
+		)
+	end
+
+	---@type EssencesPixelGlowFrame
+	local glow = CreateFrame("Frame", nil, frame, "EssencesPixelGlowTemplate")
+	glow:SetPoint("TOPLEFT", frame, "TOPLEFT", -1, 1)
+	glow:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 1, -1)
+
+	for _, side in ipairs({ "Top", "Right", "Bottom", "Left" }) do
+		glow[side]:SetTexture(glowDashTexture, "REPEAT", "CLAMP", "NEAREST")
+		glow[side]:SetVertexColor(0.95, 0.95, 0.32, 1)
+	end
+
+	glow:SetScript("OnShow", function(self)
+		self:SetFrameLevel(frame:GetFrameLevel() + 8)
+		LayoutGlow(self)
+		self.Animation:Play()
+	end)
+
+	glow:SetScript("OnHide", function(self)
+		self.Animation:Stop()
+	end)
+
+	glow:SetScript("OnSizeChanged", function(self)
+		if self:IsVisible() then
+			-- a running translation may keep the coords it started from
+			self.Animation:Stop()
+			LayoutGlow(self)
+			self.Animation:Play()
+		end
+	end)
+
 	function frame:ToggleGlow(show)
 		if not EssencesSaved.Settings.ShowGlow then
-			if self._PixelGlow ~= nil then
-				LibCustomGlow.PixelGlow_Stop(self)
-			end
+			glow:Hide()
 
 			for i = 1, 6 do
 				self:GetStatusBarAtIndex(i).Border
@@ -104,9 +181,7 @@ table.insert(Private.LoginFnQueue, function()
 		end
 
 		if EssencesSaved.Settings.EssenceBurstIndicator == Private.Enum.EssenceBurstIndicator.Border then
-			if self._PixelGlow ~= nil then
-				LibCustomGlow.PixelGlow_Stop(self)
-			end
+			glow:Hide()
 
 			local r, g, b, a = normalBorderR, normalBorderG, normalBorderB, normalBorderA
 
@@ -125,23 +200,7 @@ table.insert(Private.LoginFnQueue, function()
 			return
 		end
 
-		if show then
-			LibCustomGlow.PixelGlow_Start(
-				self,
-				nil, -- r
-				nil, -- N
-				0.2, -- frequency
-				nil, -- length
-				nil, -- thickness
-				1, -- xOffset
-				1, -- yOffset
-				false, -- border
-				nil, -- key
-				nil -- frameLevel
-			)
-		elseif self._PixelGlow ~= nil then
-			LibCustomGlow.PixelGlow_Stop(self)
-		end
+		glow:SetShown(show)
 	end
 
 	function frame:UpdateBarColors(currentPower)

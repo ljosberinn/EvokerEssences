@@ -23,8 +23,14 @@
 ---@field Border Frame|BackdropTemplate
 ---@field Background Texture
 
+---@class EssencesPixelGlowFrame : Frame
+---@field Top Texture
+---@field Right Texture
+---@field Bottom Texture
+---@field Left Texture
+---@field Animation AnimationGroup
+
 ---@class EssencesParentFrame : Frame
----@field _PixelGlow Frame?
 ---@field imminentDestructionStacks number
 ---@field specId number
 ---@field availableEssenceBursts number
