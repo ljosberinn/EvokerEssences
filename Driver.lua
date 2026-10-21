@@ -463,14 +463,24 @@ table.insert(Private.LoginFnQueue, function()
 		end
 	end, frame)
 
-	function frame:GetRechargeRate()
-		local info = C_Spell.GetSpellInfo(361227)
+	do
+		local rechargeRate = 0.2
+		local nextRechargeRateUpdate = 0
 
-		if not info then
-			return 0.2
+		-- called from OnUpdate, so throttled
+		function frame:GetRechargeRate()
+			local now = GetTime()
+
+			if now < nextRechargeRateUpdate then
+				return rechargeRate
+			end
+
+			nextRechargeRateUpdate = now + 0.5
+			local info = C_Spell.GetSpellInfo(361227)
+			rechargeRate = info and 1 / (info.castTime / 2000) or 0.2
+
+			return rechargeRate
 		end
-
-		return 1 / (info.castTime / 2000)
 	end
 
 	local prevPower = 0
