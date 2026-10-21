@@ -7,7 +7,7 @@ end
 
 local L = Private.L
 
-L.Settings.ShowGlowLabel = "Essenzexplosionhervorhebung anzeigen"
+L.Settings.ShowGlowLabel = "Essenzexplosionshervorhebung anzeigen"
 L.Settings.EssenceBurstIndicatorLabel = "Essenzexplosion"
 L.Settings.EssenceBurstIndicatorTooltip = "Wie verfügbare Essenzexplosion-Procs angezeigt werden."
 L.Settings.EssenceBurstIndicatorLabels = {
@@ -23,9 +23,9 @@ L.Settings.ShowCantCastOpacityTooltip =
 L.Settings.ShowBackgroundLabel = "Hintergrund anzeigen"
 L.Settings.ShowRechargingLabel = "Aufladen anzeigen"
 L.Settings.ShowRechargingTooltip = "Dunkelt die Essenz ab, die gerade aufgeladen wird."
-L.Settings.HideWhileSkyridingLabel = "Beim Drachenreiten ausblenden"
+L.Settings.HideWhileSkyridingLabel = "Beim Himmelsreiten ausblenden"
 L.Settings.HideWhileSkyridingTooltip =
-"Blendet die Essenzleiste nur aus, wenn Drachenreiten auf dem aktuellen Reittier verfügbar ist."
+"Blendet die Essenzleiste nur aus, wenn Himmelsreiten auf dem aktuellen Reittier verfügbar ist."
 
 L.Settings.BaseColorLabel = "Grundfarbe"
 L.Settings.CapColorLabel = "Maximalfarbe"

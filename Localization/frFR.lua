@@ -7,15 +7,15 @@ end
 
 local L = Private.L
 
-L.Settings.ShowGlowLabel = "Afficher l'indicateur de Salve d'essence"
-L.Settings.EssenceBurstIndicatorLabel = "Indicateur de Salve d'essence"
-L.Settings.EssenceBurstIndicatorTooltip = "Comment afficher les procs de Salve d'essence disponibles."
+L.Settings.ShowGlowLabel = "Afficher l'indicateur d'Explosion d'essence"
+L.Settings.EssenceBurstIndicatorLabel = "Indicateur d'Explosion d'essence"
+L.Settings.EssenceBurstIndicatorTooltip = "Comment afficher les procs d'Explosion d'essence disponibles."
 L.Settings.EssenceBurstIndicatorLabels = {
 	[Private.Enum.EssenceBurstIndicator.Glow] = "Lueur",
 	[Private.Enum.EssenceBurstIndicator.Border] = "Couleur de bordure",
 }
-L.Settings.EssenceBurstBorderColorLabel = "Couleur de bordure de Salve d'essence"
-L.Settings.EssenceBurstBorderColorTooltip = "Couleur de bordure utilisée lorsque Salve d'essence est disponible."
+L.Settings.EssenceBurstBorderColorLabel = "Couleur de bordure d'Explosion d'essence"
+L.Settings.EssenceBurstBorderColorTooltip = "Couleur de bordure utilisée lorsqu'Explosion d'essence est disponible."
 L.Settings.UseColorsLabel = "Utiliser les couleurs"
 L.Settings.ShowCantCastOpacityLabel = "Atténuer si incantation impossible"
 L.Settings.ShowCantCastOpacityTooltip =
@@ -23,9 +23,9 @@ L.Settings.ShowCantCastOpacityTooltip =
 L.Settings.ShowBackgroundLabel = "Afficher l'arrière-plan"
 L.Settings.ShowRechargingLabel = "Afficher la recharge"
 L.Settings.ShowRechargingTooltip = "Assombrit l'essence en cours de recharge."
-L.Settings.HideWhileSkyridingLabel = "Masquer pendant la Chevauchée céleste"
+L.Settings.HideWhileSkyridingLabel = "Masquer en vol dynamique"
 L.Settings.HideWhileSkyridingTooltip =
-	"Masque la barre d'essence uniquement lorsque la Chevauchée céleste est disponible sur votre monture actuelle."
+	"Masque la barre d'essence uniquement lorsque le vol dynamique est disponible sur votre monture actuelle."
 
 L.Settings.BaseColorLabel = "Couleur de base"
 L.Settings.CapColorLabel = "Couleur au maximum"
@@ -42,7 +42,7 @@ L.Settings.BarHeightLabel = "Hauteur de la barre"
 L.Settings.GapLabel = "Espacement"
 L.Settings.BackgroundBrightnessLabel = "Luminosité de l'arrière-plan"
 L.Settings.BackgroundBrightnessTooltip =
-	"Ajuste la couleur de la barre pour produire la couleur de l'arrière-plan. 0 = noir, 1 = identique à la barre."
+	"Met à l'échelle la couleur de la barre pour produire la couleur de l'arrière-plan. 0 = noir, 1 = identique à la barre."
 L.Settings.MinWidthLabel = "Largeur minimale"
 
 L.Settings.PresetLabel = "Préréglage"
