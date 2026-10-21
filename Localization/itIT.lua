@@ -7,15 +7,15 @@ end
 
 local L = Private.L
 
-L.Settings.ShowGlowLabel = "Mostra indicatore di Esplosione di essenza"
-L.Settings.EssenceBurstIndicatorLabel = "Indicatore di Esplosione di essenza"
-L.Settings.EssenceBurstIndicatorTooltip = "Come mostrare i proc di Esplosione di essenza disponibili."
+L.Settings.ShowGlowLabel = "Mostra indicatore di Detonazione dell'Essenza"
+L.Settings.EssenceBurstIndicatorLabel = "Indicatore di Detonazione dell'Essenza"
+L.Settings.EssenceBurstIndicatorTooltip = "Come mostrare i proc di Detonazione dell'Essenza disponibili."
 L.Settings.EssenceBurstIndicatorLabels = {
 	[Private.Enum.EssenceBurstIndicator.Glow] = "Bagliore",
 	[Private.Enum.EssenceBurstIndicator.Border] = "Colore del bordo",
 }
-L.Settings.EssenceBurstBorderColorLabel = "Colore del bordo di Esplosione di essenza"
-L.Settings.EssenceBurstBorderColorTooltip = "Colore del bordo usato quando Esplosione di essenza è disponibile."
+L.Settings.EssenceBurstBorderColorLabel = "Colore del bordo di Detonazione dell'Essenza"
+L.Settings.EssenceBurstBorderColorTooltip = "Colore del bordo usato quando Detonazione dell'Essenza è disponibile."
 L.Settings.UseColorsLabel = "Usa colori"
 L.Settings.ShowCantCastOpacityLabel = "Attenua quando non puoi lanciare"
 L.Settings.ShowCantCastOpacityTooltip =
@@ -23,9 +23,9 @@ L.Settings.ShowCantCastOpacityTooltip =
 L.Settings.ShowBackgroundLabel = "Mostra sfondo"
 L.Settings.ShowRechargingLabel = "Mostra ricarica"
 L.Settings.ShowRechargingTooltip = "Scurisce l'essenza attualmente in ricarica."
-L.Settings.HideWhileSkyridingLabel = "Nascondi durante il Volo celeste"
+L.Settings.HideWhileSkyridingLabel = "Nascondi durante il Volo Dinamico"
 L.Settings.HideWhileSkyridingTooltip =
-	"Nasconde la barra delle essenze solo quando il Volo celeste è disponibile sulla tua cavalcatura attuale."
+	"Nasconde la barra delle essenze solo quando il Volo Dinamico è disponibile sulla tua cavalcatura attuale."
 
 L.Settings.BaseColorLabel = "Colore di base"
 L.Settings.CapColorLabel = "Colore al massimo"

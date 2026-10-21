@@ -7,15 +7,15 @@ end
 
 local L = Private.L
 
-L.Settings.ShowGlowLabel = "Mostrar indicador de Estallido de esencia"
-L.Settings.EssenceBurstIndicatorLabel = "Indicador de Estallido de esencia"
-L.Settings.EssenceBurstIndicatorTooltip = "Cómo mostrar los procs de Estallido de esencia disponibles."
+L.Settings.ShowGlowLabel = "Mostrar indicador de Explosión de esencia"
+L.Settings.EssenceBurstIndicatorLabel = "Indicador de Explosión de esencia"
+L.Settings.EssenceBurstIndicatorTooltip = "Cómo mostrar los procs de Explosión de esencia disponibles."
 L.Settings.EssenceBurstIndicatorLabels = {
 	[Private.Enum.EssenceBurstIndicator.Glow] = "Brillo",
 	[Private.Enum.EssenceBurstIndicator.Border] = "Color del borde",
 }
-L.Settings.EssenceBurstBorderColorLabel = "Color del borde de Estallido de esencia"
-L.Settings.EssenceBurstBorderColorTooltip = "Color del borde usado cuando Estallido de esencia está disponible."
+L.Settings.EssenceBurstBorderColorLabel = "Color del borde de Explosión de esencia"
+L.Settings.EssenceBurstBorderColorTooltip = "Color del borde usado cuando Explosión de esencia está disponible."
 L.Settings.UseColorsLabel = "Usar colores"
 L.Settings.ShowCantCastOpacityLabel = "Atenuar cuando no se puede lanzar"
 L.Settings.ShowCantCastOpacityTooltip =
@@ -23,9 +23,9 @@ L.Settings.ShowCantCastOpacityTooltip =
 L.Settings.ShowBackgroundLabel = "Mostrar fondo"
 L.Settings.ShowRechargingLabel = "Mostrar recarga"
 L.Settings.ShowRechargingTooltip = "Oscurece la esencia que se está recargando actualmente."
-L.Settings.HideWhileSkyridingLabel = "Ocultar durante el Vuelo dracónico"
+L.Settings.HideWhileSkyridingLabel = "Ocultar durante surcacielos"
 L.Settings.HideWhileSkyridingTooltip =
-	"Oculta la barra de esencia solo cuando el Vuelo dracónico está disponible en tu montura actual."
+	"Oculta la barra de esencia solo cuando surcacielos está disponible en tu montura actual."
 
 L.Settings.BaseColorLabel = "Color base"
 L.Settings.CapColorLabel = "Color al máximo"

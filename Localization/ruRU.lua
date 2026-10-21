@@ -7,15 +7,15 @@ end
 
 local L = Private.L
 
-L.Settings.ShowGlowLabel = "Показывать индикатор Выброса Сущности"
-L.Settings.EssenceBurstIndicatorLabel = "Индикатор Выброса Сущности"
-L.Settings.EssenceBurstIndicatorTooltip = "Как отображать доступные срабатывания Выброса Сущности."
+L.Settings.ShowGlowLabel = "Показывать индикатор «Взрывной сущности»"
+L.Settings.EssenceBurstIndicatorLabel = "Индикатор «Взрывной сущности»"
+L.Settings.EssenceBurstIndicatorTooltip = "Как отображать доступные срабатывания «Взрывной сущности»."
 L.Settings.EssenceBurstIndicatorLabels = {
 	[Private.Enum.EssenceBurstIndicator.Glow] = "Свечение",
 	[Private.Enum.EssenceBurstIndicator.Border] = "Цвет рамки",
 }
-L.Settings.EssenceBurstBorderColorLabel = "Цвет рамки Выброса Сущности"
-L.Settings.EssenceBurstBorderColorTooltip = "Цвет рамки, используемый когда доступен Выброс Сущности."
+L.Settings.EssenceBurstBorderColorLabel = "Цвет рамки «Взрывной сущности»"
+L.Settings.EssenceBurstBorderColorTooltip = "Цвет рамки, используемый, когда доступна «Взрывная сущность»."
 L.Settings.UseColorsLabel = "Использовать цвета"
 L.Settings.ShowCantCastOpacityLabel = "Затемнять, когда нельзя применить"
 L.Settings.ShowCantCastOpacityTooltip =
@@ -23,9 +23,9 @@ L.Settings.ShowCantCastOpacityTooltip =
 L.Settings.ShowBackgroundLabel = "Показывать фон"
 L.Settings.ShowRechargingLabel = "Показывать восстановление"
 L.Settings.ShowRechargingTooltip = "Затемняет сущность, которая сейчас восстанавливается."
-L.Settings.HideWhileSkyridingLabel = "Скрывать во время Полёта верхом"
+L.Settings.HideWhileSkyridingLabel = "Скрывать во время высшего пилотажа"
 L.Settings.HideWhileSkyridingTooltip =
-	"Скрывает шкалу сущностей только когда на текущем средстве передвижения доступен Полёт верхом."
+	"Скрывает шкалу сущностей, только когда на текущем средстве передвижения доступен высший пилотаж."
 
 L.Settings.BaseColorLabel = "Основной цвет"
 L.Settings.CapColorLabel = "Цвет при максимуме"
